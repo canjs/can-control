@@ -17,10 +17,12 @@ var dev = require("can-util/js/dev/");
 
 var domData = require("can-util/dom/data/");
 var className = require("can-util/dom/class-name/");
-var domDispatch = require("can-util/dom/dispatch/");
 var domEvents = require("can-util/dom/events/");
-require("can-util/dom/events/delegate/");
 var canEvent = require("can-event");
+var processors;
+
+require("can-util/dom/dispatch/");
+require("can-util/dom/events/delegate/");
 
 // ### bind
 // this helper binds to one element and returns a function that unbinds from that element.
@@ -318,7 +320,7 @@ var Control = Construct.extend(
 			this.off();
 
 			if (pluginName && pluginName !== 'can_control') {
-				className.remove.call(element, pluginname);
+				className.remove.call(this.element, pluginName);
 			}
 
 			controls = domData.get.call(this.element, "controls");
@@ -334,7 +336,7 @@ var Control = Construct.extend(
 //
 // Processors do the binding. This basic processor binds events. Each returns a function that unbinds
 // when called.
-var processors = Control.processors;
+processors = Control.processors;
 basicProcessor = function (el, event, selector, methodName, control) {
 	return binder(el, event, Control._shifter(control, methodName), selector);
 };

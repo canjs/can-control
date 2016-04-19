@@ -1,4 +1,3 @@
-/*global WeirdBind*/
 /* jshint asi:true*/
 var Control = require('can-control');
 var QUnit = require('steal-qunit');
@@ -192,6 +191,8 @@ test('on rebinding', 2, function () {
 	canEvent.trigger.call(item2, 'foo');
 });
 test("actions provide method names", function () {
+	var item1 = {};
+	var item2 = {};
 	var Tester = Control.extend({
 		"{item1} foo": "food",
 		"{item2} bar": "food",
@@ -200,9 +201,6 @@ test("actions provide method names", function () {
 			ok(item === item1 || item === item2, "called with an item")
 		}
 	});
-
-	var item1 = {},
-		item2 = {};
 
 	new Tester(document.createElement('div'), {
 		item1: item1,
