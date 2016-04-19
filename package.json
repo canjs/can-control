@@ -1,6 +1,6 @@
 {
   "name": "can-control",
-  "version": "0.0.0",
+  "version": "3.0.0-pre.0",
   "description": "",
   "homepage": "http://canjs.com",
   "author": {
@@ -15,6 +15,7 @@
     "testee": "testee test.html --browsers firefox",
     "test": "npm run testee",
     "jshint": "jshint can-control.js can-control_test.js --config",
+    "release:prerelease": "npm version prerelease && npm publish",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish",
@@ -52,9 +53,9 @@
     "npmAlgorithm": "flat"
   },
   "dependencies": {
-    "can-util": "^0.0.0",
-    "can-construct": "^0.0.0",
-	"can-event": "^0.0.0"
+    "can-construct": "^3.0.0-pre.1",
+    "can-event": "^3.0.0-pre.1",
+    "can-util": "^3.0.0-pre.1"
   },
   "devDependencies": {
     "documentjs": "^0.4.2",
