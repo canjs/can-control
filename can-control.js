@@ -5,24 +5,24 @@
 // controls with behaviors, bound to elements on the page.
 // ## helpers
 
-var Construct = require('can-construct');
+var Construct = require("can-construct");
 
-var string = require("can-util/js/string/");
-var assign = require("can-util/js/assign/");
-var isFunction = require('can-util/js/is-function/');
-var isArray = require('can-util/js/is-array/');
-var assign = require("can-util/js/assign/");
-var each = require("can-util/js/each/");
-var dev = require("can-util/js/dev/");
+var namespace = require("can-util/namespace");
+var string = require("can-util/js/string/string");
+var assign = require("can-util/js/assign/assign");
+var isFunction = require("can-util/js/is-function/is-function");
+var isArray = require("can-util/js/is-array/is-array");
+var each = require("can-util/js/each/each");
+var dev = require("can-util/js/dev/dev");
 
-var domData = require("can-util/dom/data/");
-var className = require("can-util/dom/class-name/");
-var domEvents = require("can-util/dom/events/");
+var domData = require("can-util/dom/data/data");
+var className = require("can-util/dom/class-name/class-name");
+var domEvents = require("can-util/dom/events/events");
 var canEvent = require("can-event");
 var processors;
 
-require("can-util/dom/dispatch/");
-require("can-util/dom/events/delegate/");
+require("can-util/dom/dispatch/dispatch");
+require("can-util/dom/events/delegate/delegate");
 
 // ### bind
 // this helper binds to one element and returns a function that unbinds from that element.
@@ -353,4 +353,4 @@ each(["change", "click", "contextmenu", "dblclick", "keydown", "keyup",
 	processors[v] = basicProcessor;
 });
 
-module.exports = exports = Control;
+module.exports = namespace.Control = Control;
