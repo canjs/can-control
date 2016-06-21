@@ -1,11 +1,12 @@
-@module {constructor} can-control Control
+@module {constructor} can-control can-control
 @parent can-core
 @download can/route
 @test can/route/test.html
 @test can/control/test.html
 @inherits can.Construct
 @description widget factory with declarative event binding.
-@group can-control.plugins plugins
+@group can-control.static static
+@group can-control.prototype prototype
 @link ../docco/control/control.html docco
 
 @description Create organized, memory-leak free, rapidly performing,

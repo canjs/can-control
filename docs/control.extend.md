@@ -1,4 +1,4 @@
-@function can-control.extend Control.extend
+@function can-control.extend extend
 @parent can-control.static
 
 @signature `Control.extend([staticProperties,] instanceProperties)`
