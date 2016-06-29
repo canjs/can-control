@@ -11,6 +11,10 @@
 			"can-control.prototype.on",
 			"can-control.prototype.options",
 			"can-control.prototype.setup"
+		]},
+		{"types": [
+			"can-control.eventHandler",
+			"can-control.eventDescription"
 		]}
 	]}
 ]

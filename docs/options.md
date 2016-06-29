@@ -6,14 +6,14 @@
 
 The `this.options` property is an Object that contains
 configuration data passed to a control when it is
-created (`new can.Control(element, options)`).
+created (`new Control(element, options)`).
 
 In the following example, an options object with
 a message is passed to a `Greeting` control. The
-`Greeting` control changes the text of its [can.Control::element element]
+`Greeting` control changes the text of its [can-control::element element]
 to the options' message value.
 
-	var Greeting = can.Control.extend({
+	var Greeting = Control.extend({
 		init: function(){
 			this.element.text( this.options.message )
 		}
@@ -22,13 +22,13 @@ to the options' message value.
 	new Greeting("#greeting",{message: "I understand this.options"});
 
 The options argument passed when creating the control
-is merged with [can.Control.defaults defaults] in
-[can.Control.prototype.setup setup].
+is merged with [can-control.defaults defaults] in
+[can-control.prototype.setup setup].
 
 In the following example, if no message property is provided,
 the defaults' message property is used.
 
-	var Greeting = can.Control.extend({
+	var Greeting = Control.extend({
 		defaults: {
 			message: "Defaults merged into this.options"
 		}

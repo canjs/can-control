@@ -5,7 +5,7 @@
 @signature `control.setup(element, options)`
 @param {HTMLElement|NodeList|String} element The element as passed to the constructor.
 @param {Object} [options] option values for the control.  These get added to
-this.options and merged with [can.Control.static.defaults defaults].
+this.options and merged with [can-control.static.defaults defaults].
 @return {undefined|Array} return an array if you want to change what init is called with. By
 default it is called with the element and options passed to the control.
 
@@ -19,7 +19,7 @@ Setup, when called, does the following:
 
 The first parameter passed to new Control( el, options ) is expected to be
 an element.  This gets converted to a Wrapped NodeList element and set as
-[can.Control.prototype.element this.element].
+[can-control.prototype.element this.element].
 
 ### Adds the control's name to the element's className
 
@@ -37,9 +37,9 @@ instances of "Foo.Bar" like:
 ### Merges Options
 
 Merges the default options with optional user-supplied ones.
-Additionally, default values are exposed in the static [can.Control.static.defaults defaults]
+Additionally, default values are exposed in the static [can-control.static.defaults defaults]
 so that users can change them.
 
 ### Binds event handlers
 
-Setup does the event binding described in [can.Control].
+Setup does the event binding described in [can-control].

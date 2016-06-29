@@ -22,7 +22,7 @@ Rebind all of a control's event handlers.
 
 @body
 `this.on()` is used to rebind
-all event handlers when [can.Control::options this.options] has changed.  It
+all event handlers when [can-control::options this.options] has changed.  It
 can also be used to bind or delegate from other elements or objects.
 
 ## Rebinding
@@ -32,7 +32,7 @@ By using templated event handlers, a control can listen to objects outside
 the following control might listen to a task model's `completed` property and
 toggle a strike className like:
 
-	TaskStriker = can.Control({
+	TaskStriker = Control({
 		"{task} completed": function(){
 			this.update();
 		},
@@ -52,7 +52,7 @@ toggle a strike className like:
 To update the `taskstriker`'s task, add a task method that updates
 this.options and rebinds the event handlers for the new task like:
 
-	TaskStriker = can.Control({
+	TaskStriker = Control({
 		"{task} completed": function(){
 			this.update();
 		},

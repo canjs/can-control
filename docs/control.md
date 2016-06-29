@@ -1,16 +1,16 @@
 @module {constructor} can-control can-control
-@parent can-core
+@parent can-legacy
 @download can/route
 @test can/route/test.html
 @test can/control/test.html
-@inherits can.Construct
+@inherits can-construct
 @description widget factory with declarative event binding.
 @group can-control.static static
 @group can-control.prototype prototype
 @link ../docco/control/control.html docco
 
 @description Create organized, memory-leak free, rapidly performing,
-stateful controls with declarative event binding. Use `can.Control` to create UI 
+stateful controls with declarative event binding. Use `Control` to create UI 
 controls like tabs, grids, and context menus,
 and organize them into higher-order business rules with
 [can.route]. It can serve as both a traditional view and a traditional controller.
@@ -18,11 +18,11 @@ and organize them into higher-order business rules with
 @signature `Control( [staticProperties,] instanceProperties )`
 
 Create a new, extended, control constructor 
-function. This functionality is inherited from [can.Construct] and is deprecated in favor of using 
-[can.Control.extend]. 
+function. This functionality is inherited from [can-construct] and is deprecated in favor of using 
+[can-control.extend]. 
 
 @param {Object} [staticProperties] An object of properties and methods that are added the control constructor 
-function directly. The most common property to add is [can.Control.defaults].
+function directly. The most common property to add is [can-control.defaults].
 
 @param {Object} instanceProperties An object of properties and methods that belong to 
 instances of the `Control` constructor function. These properties are added to the
@@ -38,16 +38,15 @@ extended with the provided `staticProperties` and `instanceProperties`.
 
 Create an instance of a control. [can.Control.prototype.setup] processes
 the arguments and sets up event binding. Write your initialization
-code in [can.Control.prototype.init]. Note, you never call `new can.Control()` directly,
-instead, you call it on constructor functions extended from `can.Control`.
+code in [can.Control.prototype.init]. Note, you never call `new Control()` directly,
+instead, you call it on constructor functions extended from `Control`.
 
-@param {HTMLElement|can.NodeList|CSSSelectorString} element Specifies the element the control 
-will be created on.
+@param {HTMLElement|can-view-nodelist|CSSSelectorString} element Specifies the element the control will be created on.
 
-@param {Object} [options] Option values merged with [can.Control.defaults can.Control.defaults]
-and set as [can.Control.prototype.options this.options].
+@param {Object} [options] Option values merged with [can-control.defaults Control.defaults]
+and set as [can-control::options this.options].
 
-@return {can.Control} A new instance of the constructor function extending can.Control.
+@return {can-control} A new instance of the constructor function extending Control.
 
 @body
 
@@ -66,9 +65,9 @@ lifecycle events:
 
 The following example builds up a basic todos widget for listing 
 and completing todo items. Start by creating a control constructor 
-function of your own by extending [can.Control] and defining an instance init method.
+function of your own by extending [can-control] and defining an instance init method.
 
-    var Todos = can.Control.extend({
+    var Todos = Control.extend({
       init: function( element, options ) { ... }
     });
 
@@ -89,7 +88,7 @@ The control's associated [can.ejs EJS] template looks like:
 
 ### `init(element, options)`
 
-[can.Control.prototype.init] is called with the below arguments when new instances of [can.Control] are created:
+[can-control.prototype.init] is called with the below arguments when new instances of [can-control] are created:
 
 - __element__ - The wrapped element passed to the 
                 control. Control accepts a
@@ -102,9 +101,9 @@ The control's associated [can.ejs EJS] template looks like:
 
 Any additional arguments provided to the constructor will be passed as normal. Use [can.view] to produce a document fragment
 from your template and inject it in the passed element. Note that the `todos` parameter passed to [can.view] below
-is an instance of [can.List]:
+is an instance of [can-list]:
 
-    var Todos = can.Control.extend({
+    var Todos = Control.extend({
 
       //defaults are merged into the options arg provided to the constructor
       defaults : { view: 'todos.ejs' }
@@ -133,7 +132,7 @@ is an instance of [can.List]:
 
 ### `this.element`
 
-[can.Control::element] is the 
+[can-control::element] is the 
 NodeList consisting of the element the control is created on. 
 
     var todosControl = new Todos( document.body.firstElementChild );
@@ -144,15 +143,15 @@ the element is wrapped with `jQuery( element )`.
 
 ### `this.options`
 
-[can.Control::options] is the second argument passed to 
-`new can.Control()`, merged with the control's static __defaults__ property.
+[can-control::options] is the second argument passed to 
+`new Control()`, merged with the control's static __defaults__ property.
 
 ## Listening to events
 
 Control automatically binds prototype methods that look
 like event handlers. Listen to __click__'s on `<li>` elements like:
 
-    var Todos = can.Control.extend({
+    var Todos = Control.extend({
       init: function( element , options ) {...},
 
       'li click': function( li, event ) {
@@ -199,7 +198,7 @@ Customize event handler behavior with `"{NAME}"` in
 the event handler name.  The following allows customization 
 of the event that destroys a todo:
 
-    var Todos = can.Control.extend({
+    var Todos = Control.extend({
       init: function( element , options ) { ... },
       
       'li click': function( li ) { ... },
@@ -215,7 +214,7 @@ of the event that destroys a todo:
 Values inside `{NAME}` are looked up on the control's `this.options` first,
 and then the `window`. For example, we could customize it instead like:
 
-    var Todos = can.Control.extend({
+    var Todos = Control.extend({
       init: function( element , options ) { ... },
       
       'li click': function( li ) { ... },
@@ -233,7 +232,7 @@ and then the `window`. For example, we could customize it instead like:
 
 The selector can also be templated.
 
-    var Todos = can.Control.extend({
+    var Todos = Control.extend({
       init: function( element , options ) { ... },
       
       '{listElement} click': function( li ) { ... },
@@ -259,7 +258,7 @@ If the value inside `{NAME}` is an object, Control will bind to that
 object to listen for events. For example, the following tooltip listens to 
 clicks on the window:
 
-    var Tooltip = can.Control.extend({
+    var Tooltip = Control.extend({
       '{window} click': function( el, ev ) {
         // hide only if we clicked outside the tooltip
         if ( !this.element.has( ev.target ) ) {
@@ -275,7 +274,7 @@ This is convenient when listening for model changes. If EJS were not
 taking care of removing `<li>`s after their associated models were destroyed,
 we could implement it in `Todos` like:
 
-    var Todos = can.Control.extend({
+    var Todos = Control.extend({
       init: function( element, options ) {...},
       
       'li click': function( li ) {...},
@@ -303,10 +302,10 @@ we could implement it in `Todos` like:
 
 ### `on()`
 
-[can.Control::on] rebinds a control's event handlers. This is useful when you want
+[can-control::on] rebinds a control's event handlers. This is useful when you want
 to listen to a specific model and change it:
 
-    var Editor = can.Control.extend({
+    var Editor = Control.extend({
       todo: function( todo ) {
         this.options.todo = todo;
         this.on();
@@ -349,7 +348,7 @@ to listen to a specific model and change it:
 
 ## Destroying a control
 
-[can.Control::destroy] unbinds a control's
+[can-control::destroy] unbinds a control's
 event handlers and releases its element, but does not remove 
 the element from the page. 
 
@@ -375,7 +374,7 @@ data by calling `$(document.body).empty()`._
 
 ## Tabs Example
 
-Here is an example of how to build a simple tab widget using can.Control:
+Here is an example of how to build a simple tab widget using Control:
 
 <iframe style="width: 100%; height: 300px"
         src="http://jsfiddle.net/donejs/kXLLt/embedded/result,html,js,css" 
