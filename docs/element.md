@@ -1,4 +1,4 @@
-@property {can.NodeList} can-control.prototype.element element
+@property {can-view-nodeList} can-control.prototype.element element
 @parent can-control.prototype
 @description The element passed to the Control when creating a new instance.
 
@@ -7,14 +7,14 @@
 The control instance's HTMLElement (or window) wrapped by the
 util library for ease of use.
 
-It is set by the first parameter to `new can.Construct( element, options )`
+It is set by the first parameter to `new Construct( element, options )`
 in [can.Control::setup].  By default, a control listens to events on `this.element`.
 
 ### Example - NodeList
 
 The following `HelloWorld` control sets the control`s text to "Hello World":
 
-	HelloWorld = can.Control({
+	HelloWorld = Control({
 		init: function(){
 			this.element.text( 'Hello World' );
 		}
@@ -56,7 +56,7 @@ __YUI__
 
 ## Changing `this.element`
 
-Sometimes you don't want what's passed to `new can.Control`
+Sometimes you don't want what's passed to `new Control`
 to be `this.element`.  You can change this by overwriting
 setup or by unbinding, setting this.element, and rebinding.
 
@@ -67,7 +67,7 @@ select element with a div.  That div is used
 as `this.element`. Notice how `destroy` sets back the
 original element.
 
-	Combobox = can.Control({
+	Combobox = Control({
 		setup: function( el, options ) {
 			this.oldElement = $( el );
 			var newEl = $( '<div/>' );
@@ -82,7 +82,7 @@ original element.
 		},
 		destroy: function() {
 			var div = this.element; //save reference
-			can.Control.prototype.destroy.call( this );
+			Control.prototype.destroy.call( this );
 			div.replaceWith( this.oldElement );
 		}
 	});

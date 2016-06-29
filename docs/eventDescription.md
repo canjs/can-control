@@ -1,5 +1,5 @@
-@typedef {String} can.Control.eventDescription eventDescription
-@parent can.Control.types
+@typedef {String} can-control.eventDescription eventDescription
+@parent can-control.types
 
 @signature `"[CONTEXT ][SELECTOR ]EVENTNAME"`
 

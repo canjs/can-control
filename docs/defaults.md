@@ -8,10 +8,10 @@ Default options provided for when a new control is created without values set in
 
 `defaults` provides default values for a Control's options.
 Options passed into the constructor function will be shallowly merged
-into the values from defaults in [can.Control::setup], and
-the result will be stored in [can.Control::options this.options].
+into the values from defaults in [can-control::setup], and
+the result will be stored in [can-control::options this.options].
 
-	Message = can.Control.extend({
+	Message = Control.extend({
 	  defaults: {
 		message: "Hello World"
 	  }
@@ -26,12 +26,12 @@ the result will be stored in [can.Control::options this.options].
 
 ## Shared Properties
 
-New instances of a can.Control will create a shallow copy of the default
+New instances of a Control will create a shallow copy of the default
 options. Be aware as shallow copies keep a reference to object types, such as
 objects, maps and computes.
 
 ```
-var Sample = can.Control.extend({
+var Sample = Control.extend({
   defaults: {
     computedProp: can.compute(),
     primitiveProp: 'sample'

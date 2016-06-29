@@ -1,4 +1,4 @@
-@property {Object.<can.Control.processor>} can-control.processors processors
+@property {Object.<can-control.processor>} can-control.processors processors
 @parent can-control.static
 @description A collection of hookups for custom events on Controls.
 @body
@@ -25,7 +25,7 @@ to bind the event.)
 Here is a Control with a custom event processor set and two callbacks bound
 to that event:
 
-	can.Control.processors.birthday = function(el, ev, selector, callback, control) {
+	Control.processors.birthday = function(el, ev, selector, callback, control) {
 	if(selector) {
 	 myFramework.delegate(ev, el, selector, callback);
 	 return function() { myFramework.undelegate(ev, el, selector, callback); };
@@ -35,7 +35,7 @@ to that event:
 	}
 	};
 
-	can.Control("EventTarget", { }, {
+	Control("EventTarget", { }, {
 	'birthday': function(el, ev) {
 	 // do something appropriate for the occasion
 	},
@@ -46,7 +46,7 @@ to that event:
 
 	var target = new EventTarget('#person');
 
-When `target` is initialized, can.Control will call `can.Control.processors.birthday`
+When `target` is initialized, can.Control will call `Control.processors.birthday`
 twice (because there are two event hookups for the _birthday_ event). The first
 time it's called, the arguments will be:
 
@@ -66,7 +66,7 @@ The second time, the arguments are slightly different:
 definition.
 - _control_: `target` itself.
 
-can.Control already has processors for these events:
+Control already has processors for these events:
 
 - change
 - click

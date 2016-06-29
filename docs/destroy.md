@@ -19,7 +19,7 @@ its element's innerHTML. If we remove the element, the window's event handler
 is removed auto-magically:
 
 
-	Clicker = can.Control({
+	Clicker = Control({
 	"{window} click": function() {
 		this.element.html( this.count ?
 		this.count++ : this.count = 0 );
@@ -68,7 +68,7 @@ __NOTE__: When overwriting destroy, make sure you call Control's base functional
 The following example changes an element's text when the control is
 created and sets it back when the control is removed:
 
-	Changer = can.Control.extend({
+	Changer = Control.extend({
 		init: function() {
 			this.oldText = this.element.text();
 			this.element.text( "Changed!!!" );
@@ -92,4 +92,4 @@ Control prepares the control for garbage collection by:
 - unbinding all event handlers
 - clearing references to this.element and this.options
 - clearing the element's reference to the control
-- removing it's `can.Control.pluginName` from the element's className
+- removing it's `Control.pluginName` from the element's className
