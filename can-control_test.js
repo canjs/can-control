@@ -7,6 +7,7 @@ var dev = require('can-util/js/dev/');
 var domDispatch = require('can-util/dom/dispatch/');
 var domMutate = require('can-util/dom/mutate/');
 var canEvent = require('can-event');
+var types = require("can-util/js/types/types");
 
 QUnit.module('can-control',{
     setup: function(){
@@ -292,3 +293,33 @@ if (dev) {
 		dev.log = oldlog;
 	});
 }
+
+test("Uses types.wrapElement", function(){
+	expect(2);
+	var $ = function(element){
+		this.element = element;
+	};
+
+	var wrapElement = types.wrapElement;
+	var unwrapElement = types.unwrapElement;
+
+	types.wrapElement = function(element){
+		return new $(element);
+	};
+	
+	types.unwrapElement = function(object){
+		return this.element;
+	};
+
+	var MyControl = Control.extend({
+		init: function(element){
+			types.wrapElement = wrapElement;
+			types.unwrapElement = unwrapElement;
+
+			ok(element instanceof $, "element is wrapped");
+			ok(this.element instanceof $, "this.element is wrapped");
+		}
+	});
+
+	new MyControl(document.createElement('div'));
+});

@@ -14,6 +14,7 @@ var isFunction = require("can-util/js/is-function/is-function");
 var isArray = require("can-util/js/is-array/is-array");
 var each = require("can-util/js/each/each");
 var dev = require("can-util/js/dev/dev");
+var types = require("can-util/js/types/types");
 
 var domData = require("can-util/dom/data/data");
 var className = require("can-util/dom/class-name/class-name");
@@ -169,7 +170,10 @@ var Control = Construct.extend(
 		defaults: {},
         // should be used to overwrite to make nodeLists on this
         convertElement: function(element) {
-            return typeof element === "string" ? document.querySelector(element) : element;
+            element = typeof element === "string" ?
+							document.querySelector(element) : element;
+
+						return types.wrapElement(element);
         },
         // should be overwritten to look in jquery special events
         isSpecial: function(eventName){
@@ -237,7 +241,7 @@ var Control = Construct.extend(
 				var cls = this.constructor,
 					bindings = this._bindings,
 					actions = cls.actions,
-					element = this.element,
+					element = types.unwrapElement(this.element),
 					destroyCB = Control._shifter(this, "destroy"),
 					funcName, ready;
 
@@ -288,7 +292,7 @@ var Control = Construct.extend(
 		// Unbinds all event handlers on the controller.
 		// This should _only_ be called in combination with .on()
 		off: function () {
-			var el = this.element[0],
+			var el = types.unwrapElement(this.element),
 				bindings = this._bindings;
 			if( bindings ) {
 				each(bindings.user || [], function (value) {

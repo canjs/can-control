@@ -46,9 +46,9 @@
     "npmAlgorithm": "flat"
   },
   "dependencies": {
-    "can-construct": "^3.0.0-pre.1",
+    "can-construct": "^3.0.0-pre.8",
     "can-event": "^3.0.0-pre.1",
-    "can-util": "^3.0.0-pre.21"
+    "can-util": "^3.0.0-pre.34"
   },
   "devDependencies": {
     "bit-docs": "0.0.6",
