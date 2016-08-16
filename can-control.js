@@ -96,7 +96,6 @@ var Control = Construct.extend(
 		// Moves `this` to the first argument, wraps it with `jQuery` if it's
 		// an element.
 		_shifter: function (context, name) {
-
 			var method = typeof name === "string" ? context[name] : name;
 
 			if (!isFunction(method)) {
@@ -104,8 +103,9 @@ var Control = Construct.extend(
 			}
 
 			return function () {
+				var wrapped = types.wrapElement(this);
 				context.called = name;
-				return method.apply(context, [this].concat(slice.call(arguments, 0)));
+				return method.apply(context, [wrapped].concat(slice.call(arguments, 0)));
 			};
 		},
 
