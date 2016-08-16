@@ -295,7 +295,7 @@ if (dev) {
 }
 
 test("Uses types.wrapElement", function(){
-	expect(2);
+	expect(3);
 	var $ = function(element){
 		this.element = element;
 	};
@@ -308,18 +308,24 @@ test("Uses types.wrapElement", function(){
 	};
 	
 	types.unwrapElement = function(object){
-		return this.element;
+		return object.element;
 	};
 
 	var MyControl = Control.extend({
 		init: function(element){
+			ok(element instanceof $, "element is wrapped");
+			ok(this.element instanceof $, "this.element is wrapped");
+		},
+		"click": function(element){
 			types.wrapElement = wrapElement;
 			types.unwrapElement = unwrapElement;
 
-			ok(element instanceof $, "element is wrapped");
-			ok(this.element instanceof $, "this.element is wrapped");
+			ok(element instanceof $);
 		}
 	});
 
-	new MyControl(document.createElement('div'));
+	var el = document.createElement('div');
+	new MyControl(el);
+
+	canEvent.trigger.call(el, "click");
 });
