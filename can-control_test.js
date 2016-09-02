@@ -325,7 +325,9 @@ test("Uses types.wrapElement", function(){
 	});
 
 	var el = document.createElement('div');
-	new MyControl(el);
+	el.id = "foo";
+	document.body.appendChild(el);
+	new MyControl(document.getElementById('foo'));
 
 	canEvent.trigger.call(el, "click");
 });
