@@ -128,7 +128,7 @@ is an instance of [can-list]:
     new Todos( document.body.firstElementChild );
     
     // overwrite the template default
-    new Todos( '#todos', { template: 'specialTodos.ejs' } );
+    new Todos( '#todos', { view: 'specialTodos.ejs' } );
 
 ### `this.element`
 
