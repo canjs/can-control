@@ -213,9 +213,6 @@ test("actions provide method names", function () {
 	canEvent.trigger.call(item2, "bar");
 });
 test("Don\'t bind if there are undefined values in templates", function () {
-	Control.processors.proc = function () {
-		ok(false, 'This processor should never be called');
-	};
 	var C = Control.extend({}, {
 		'{noExistStuff} proc': function () {}
 	});
@@ -275,12 +272,9 @@ test("drag and drop events", function() {
 });
 if (dev) {
 	test('Control is logging information in dev mode', function () {
-		expect(2);
+		expect(1);
 		var oldlog = dev.log;
 		var oldwarn = dev.warn;
-		dev.log = function (text) {
-			equal(text, 'can/control/control.js: No property found for handling {dummy} change', 'Text logged as expected');
-		};
 		var C = Control.extend({
 			'{dummy} change': function () {}
 		});
