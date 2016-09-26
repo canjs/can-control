@@ -27,7 +27,7 @@ function directly. The most common property to add is [can-control.defaults].
 @param {Object} instanceProperties An object of properties and methods that belong to 
 instances of the `Control` constructor function. These properties are added to the
 control's `prototype` object. Properties that
-look like event handlers (ex: `"click"` or `"li mouseenter"`) are setup
+look like event handlers (ex: `"{element} click"` or `"{element} li mouseenter"`) are setup
 as event handlers (see [Listening to events](#section_Listeningtoevents)).
 
 @return {function(new:can.Construct,element,options)} A control constructor function that has been
@@ -149,12 +149,12 @@ the element is wrapped with `jQuery( element )`.
 ## Listening to events
 
 Control automatically binds prototype methods that look
-like event handlers. Listen to __click__'s on `<li>` elements like:
+like event handlers. Listen to __click__'s on `<li>` elements within [can-control::element this.element] like:
 
     var Todos = Control.extend({
       init: function( element , options ) {...},
 
-      'li click': function( li, event ) {
+      '{element} li click': function( li, event ) {
         console.log( 'You clicked', li.text() );
         
         // let other controls know what happened
@@ -162,7 +162,7 @@ like event handlers. Listen to __click__'s on `<li>` elements like:
       }
     });
 
-When an `<li>` is clicked, `"li click"` is called with:
+When an `<li>` is clicked, `"{element} li click"` is called with:
 
 - The library-wrapped __element__ that was clicked
 - The __event__ data
@@ -176,9 +176,9 @@ is clicked:
     var Todos = can.Control.extend({
       init: function( element, options ) {...},
       
-      'li click': function( li ) {...},
+      '{element} li click': function( li ) {...},
       
-      'li .destroy click': function( el, ev ) {
+      '{element} li .destroy click': function( el, ev ) {
         // get the li element that has todo data
         var li = el.closest( 'li' );
       
@@ -201,9 +201,9 @@ of the event that destroys a todo:
     var Todos = Control.extend({
       init: function( element , options ) { ... },
       
-      'li click': function( li ) { ... },
+      '{element} li click': function( li ) { ... },
       
-      'li .destroy {destroyEvent}': function( el, ev ) { 
+      '{element} li .destroy {destroyEvent}': function( el, ev ) {
         // previous destroy code here
       }
     });
@@ -217,9 +217,9 @@ and then the `window`. For example, we could customize it instead like:
     var Todos = Control.extend({
       init: function( element , options ) { ... },
       
-      'li click': function( li ) { ... },
+      '{element} li click': function( li ) { ... },
   
-      'li .destroy {Events.destroy}': function( el, ev ) { 
+      '{element} li .destroy {Events.destroy}': function( el, ev ) {
         // previous destroy code here
       }
     });
@@ -235,9 +235,9 @@ The selector can also be templated.
     var Todos = Control.extend({
       init: function( element , options ) { ... },
       
-      '{listElement} click': function( li ) { ... },
+      '{element} {listElement} click': function( li ) { ... },
       
-      '{listElement} .destroy {destroyEvent}': function( el, ev ) { 
+      '{element} {listElement} .destroy {destroyEvent}': function( el, ev ) {
         // previous destroy code here
       }
     });
@@ -277,9 +277,9 @@ we could implement it in `Todos` like:
     var Todos = Control.extend({
       init: function( element, options ) {...},
       
-      'li click': function( li ) {...},
+      '{element} li click': function( li ) {...},
       
-      'li .destroy click': function( el, ev ) {
+      '{element} li .destroy click': function( el, ev ) {
         // get the li element that has todo data
         var li = el.closest( 'li' );
       
@@ -326,7 +326,7 @@ to listen to a specific model and change it:
 
       // when the input changes
       // update the todo instance
-      'change': function() {
+      '{element} change': function() {
         var todo = this.options.todo;
         todo.attr( 'name', this.element.val() );
         todo.save();

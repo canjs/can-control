@@ -365,3 +365,31 @@ test("event handlers should rebind when target is replaced", function () {
 
 	equal(nameChanges, 2);
 });
+
+test("{element} event handling", function() {
+	expect(3);
+	stop();
+
+	var MyControl = Control.extend({
+		"{element} click": function(element){
+			if (element === this.element) {
+				ok(true, "`{element} click` should catch clicking on the element");
+			} else {
+				ok(true, "`{element} click` should catch clicking on a child of the element");
+			}
+		},
+		"{element} p click": function(){
+			ok(true, "`{element} p click` works");
+			start();
+		}
+	});
+
+	var div = document.createElement('div');
+	var p = document.createElement('p');
+	div.appendChild(p);
+
+	new MyControl(div, { foo: 'bar' });
+
+	canEvent.trigger.call(div, "click");
+	canEvent.trigger.call(p, "click");
+});
