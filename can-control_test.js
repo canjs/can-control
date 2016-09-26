@@ -218,6 +218,17 @@ test("Don\'t bind if there are undefined values in templates", function () {
 	});
 	var c = new C(document.createElement('div'));
 	equal(c._bindings.user.length, 1, 'There is only one binding');
+
+	var C2 = Control.extend({
+		'{noExistStuff} click': function () {
+			ok(false, 'should not fall through to click handler');
+		}
+	});
+
+	var div = document.createElement('div');
+	new C2(div, {});
+
+	canEvent.trigger.call(div, "click");
 });
 test('Multiple calls to destroy', 2, function () {
 	var C = Control.extend({
@@ -272,9 +283,12 @@ test("drag and drop events", function() {
 });
 if (dev) {
 	test('Control is logging information in dev mode', function () {
-		expect(1);
+		expect(2);
 		var oldlog = dev.log;
 		var oldwarn = dev.warn;
+		dev.log = function (text) {
+			equal(text, 'can/control/control.js: No property found for handling {dummy} change', 'Text logged as expected');
+		};
 		var C = Control.extend({
 			'{dummy} change': function () {}
 		});

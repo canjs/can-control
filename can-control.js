@@ -146,7 +146,7 @@ var Control = Construct.extend(
 
 					// Set the delegate target and get the name of the event we're listening to.
 					var name = methodName.replace(paramReplacer, function(matched, key) {
-						var value, lookupDelegate;
+						var value, lookupDelegate, parent;
 
 						// If we are listening directly on a part of the lookup path, set it as a delegate target.
 						// This is needed for binding on {viewModel} from can-component's Control.
@@ -160,7 +160,10 @@ var Control = Construct.extend(
 						// This is needed for bindings like {viewModel.foo} in can-component's Control.
 						key = this._removeLookupFromKey(key);
 
-						value = observeReader.read(this._lookup(options)[0], observeReader.reads(key), {
+						// set the parent (where the key will be read from)
+						parent = this._lookup(options)[0];
+
+						value = observeReader.read(parent, observeReader.reads(key), {
 							// if we find a compute, we should bind on that and not read it
 							readCompute: false
 						}).value;
@@ -168,6 +171,15 @@ var Control = Construct.extend(
 						// If `value` is undefined use `string.getObject` to get the value.
 						if (value === undefined) {
 							value = string.getObject(key);
+						}
+
+						// if the parent is not an observable and we don't have a value, show a warning
+						// in this situation, it is not possible for the event handler to be triggered
+						if (!parent || !parent.on && !value) {
+							//!steal-remove-start
+							dev.log('can/control/control.js: No property found for handling ' + methodName);
+							//!steal-remove-end
+							return null;
 						}
 
 						// If `value` is a string we just return it, otherwise we set it as a delegate target.
