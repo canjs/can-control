@@ -8,6 +8,7 @@ var domDispatch = require('can-util/dom/dispatch/');
 var domMutate = require('can-util/dom/mutate/');
 var canEvent = require('can-event');
 var types = require("can-util/js/types/types");
+var CanMap = require('can-map');
 
 QUnit.module('can-control',{
     setup: function(){
@@ -212,14 +213,22 @@ test("actions provide method names", function () {
 	canEvent.trigger.call(item2, "bar");
 });
 test("Don\'t bind if there are undefined values in templates", function () {
-	Control.processors.proc = function () {
-		ok(false, 'This processor should never be called');
-	};
 	var C = Control.extend({}, {
 		'{noExistStuff} proc': function () {}
 	});
 	var c = new C(document.createElement('div'));
 	equal(c._bindings.user.length, 1, 'There is only one binding');
+
+	var C2 = Control.extend({
+		'{noExistStuff} click': function () {
+			ok(false, 'should not fall through to click handler');
+		}
+	});
+
+	var div = document.createElement('div');
+	new C2(div, {});
+
+	canEvent.trigger.call(div, "click");
 });
 test('Multiple calls to destroy', 2, function () {
 	var C = Control.extend({
@@ -306,7 +315,7 @@ test("Uses types.wrapElement", function(){
 	types.wrapElement = function(element){
 		return new $(element);
 	};
-	
+
 	types.unwrapElement = function(object){
 		return object.element;
 	};
@@ -330,4 +339,29 @@ test("Uses types.wrapElement", function(){
 	new MyControl(document.getElementById('foo'));
 
 	canEvent.trigger.call(el, "click");
+});
+
+test("event handlers should rebind when target is replaced", function () {
+	var nameChanges = 0;
+
+	var MyControl = Control.extend({
+		"{person.name} first": function () {
+			nameChanges++;
+		},
+		name: function(name) {
+			this.options.person.attr('name', name);
+		}
+	});
+
+	var c = new MyControl(document.createElement('div'), {
+		person: new CanMap({
+			name: { first: 'Kevin' }
+		})
+	})
+
+	c.options.person.attr('name.first', 'Tracy');
+	c.name({ first: 'Kim' });
+	c.options.person.attr('name.first', 'Max');
+
+	equal(nameChanges, 2);
 });

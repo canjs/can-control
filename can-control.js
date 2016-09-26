@@ -11,7 +11,6 @@ var namespace = require("can-util/namespace");
 var string = require("can-util/js/string/string");
 var assign = require("can-util/js/assign/assign");
 var isFunction = require("can-util/js/is-function/is-function");
-var isArray = require("can-util/js/is-array/is-array");
 var each = require("can-util/js/each/each");
 var dev = require("can-util/js/dev/dev");
 var types = require("can-util/js/types/types");
@@ -20,6 +19,8 @@ var domData = require("can-util/dom/data/data");
 var className = require("can-util/dom/class-name/class-name");
 var domEvents = require("can-util/dom/events/events");
 var canEvent = require("can-event");
+var canCompute = require("can-compute");
+var observeReader = require('can-observation/reader/reader');
 var processors;
 
 require("can-util/dom/dispatch/dispatch");
@@ -130,7 +131,8 @@ var Control = Construct.extend(
 		// For performance reasons, `_action` is called twice:
 		// * It's called when the Control class is created. for templated method names (e.g., `{window} foo`), it returns null. For non-templated method names it returns the event binding data. That data is added to `this.actions`.
 		// * It is called wehn a control instance is created, but only for templated actions.
-		_action: function (methodName, options) {
+		_action: function(methodName, options, controlInstance) {
+			var readyCompute;
 
 			// If we don't have options (a `control` instance), we'll run this later. If we have
 			// options, run `can.sub` to replace the action template `{}` with values from the `options`
@@ -138,27 +140,104 @@ var Control = Construct.extend(
 			// In that case, the event name we want will be the last item in that array.
 			paramReplacer.lastIndex = 0;
 			if (options || !paramReplacer.test(methodName)) {
-				var convertedName = options ? string.sub(methodName, this._lookup(options)) : methodName;
-				if (!convertedName) {
-					//!steal-remove-start
-					dev.log('can/control/control.js: No property found for handling ' + methodName);
-					//!steal-remove-end
-					return null;
-				}
-				var arr = isArray(convertedName),
-					name = arr ? convertedName[1] : convertedName,
-					parts = name.split(/\s+/g),
-					event = parts.pop();
 
-				return {
-					processor: processors[event] || basicProcessor,
-					parts: [name, parts.join(" "), event],
-					delegate: arr ? convertedName[0] : undefined
-				};
+				readyCompute = canCompute(function() {
+					var delegate;
+
+					// Set the delegate target and get the name of the event we're listening to.
+					var name = methodName.replace(paramReplacer, function(matched, key) {
+						var value, parent;
+
+						// If listening directly to a delegate target, set it
+						if (this._isDelegate(options, key)) {
+							delegate = this._getDelegate(options, key);
+							return "";
+						}
+
+						// If key contains part of the lookup path, remove it.
+						// This is needed for bindings like {viewModel.foo} in can-component's Control.
+						key = this._removeDelegateFromKey(key);
+
+						// set the parent (where the key will be read from)
+						parent = this._lookup(options)[0];
+
+						value = observeReader.read(parent, observeReader.reads(key), {
+							// if we find a compute, we should bind on that and not read it
+							readCompute: false
+						}).value;
+
+						// If `value` is undefined use `string.getObject` to get the value.
+						if (value === undefined) {
+							value = string.getObject(key);
+						}
+
+						// if the parent is not an observable and we don't have a value, show a warning
+						// in this situation, it is not possible for the event handler to be triggered
+						if (!parent || !parent.on && !value) {
+							//!steal-remove-start
+							dev.log('can/control/control.js: No property found for handling ' + methodName);
+							//!steal-remove-end
+							return null;
+						}
+
+						// If `value` is a string we just return it, otherwise we set it as a delegate target.
+						if (typeof value === "string") {
+							return value;
+						} else {
+							delegate = value;
+							return "";
+						}
+					}.bind(this));
+
+					// Get the name of the `event` we're listening to.
+					var parts = name.split(/\s+/g),
+						event = parts.pop();
+
+					// Return everything needed to handle the event we're listening to.
+					return {
+						processor: this.processors[event] || basicProcessor,
+						parts: [name, parts.join(" "), event],
+						delegate: delegate || undefined
+					};
+				}, this);
+
+				if (controlInstance) {	
+					// Create a handler function that we'll use to handle the `change` event on the `readyCompute`.
+					var handler = function(ev, ready) {
+						// unbinds the old binding
+						controlInstance._bindings.control[methodName](controlInstance.element);
+						// binds the new
+						controlInstance._bindings.control[methodName] = ready.processor(
+							ready.delegate || controlInstance.element,
+							ready.parts[2], ready.parts[1], methodName, controlInstance);
+					};
+
+					readyCompute.bind("change", handler);
+
+					controlInstance._bindings.readyComputes[methodName] = {
+						compute: readyCompute,
+						handler: handler
+					};
+				}
+
+				return readyCompute();
 			}
 		},
+		// the lookup path - where templated keys will be looked up
 		_lookup: function (options) {
 			return [options, window];
+		},
+		// strip strings that represent delegates from the key
+		_removeDelegateFromKey: function (key) {
+			return key;
+		},
+		// return whether the key is a delegate
+		_isDelegate: function(options, key) {
+			return false;
+		},
+		// return the delegate object for a given key
+		_getDelegate: function(options, key) {
+			return undefined;
 		},
 		// ## can.Control.processors
 		//
@@ -301,9 +380,12 @@ var Control = Construct.extend(
 				each(bindings.control || {}, function (value) {
 					value(el);
 				});
+				each(bindings.readyComputes || {}, function(value) {
+					value.compute.unbind("change", value.handler);
+				});
 			}
 			// Adds bindings.
-			this._bindings = {user: [], control: {}};
+			this._bindings = {user: [], control: {}, readyComputes: {}};
 		},
 		// ## destroy
 		//
