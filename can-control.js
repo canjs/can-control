@@ -146,19 +146,17 @@ var Control = Construct.extend(
 
 					// Set the delegate target and get the name of the event we're listening to.
 					var name = methodName.replace(paramReplacer, function(matched, key) {
-						var value, lookupDelegate, parent;
+						var value, parent;
 
-						// If we are listening directly on a part of the lookup path, set it as a delegate target.
-						// This is needed for binding on {viewModel} from can-component's Control.
-						lookupDelegate = this._inLookup(options, key);
-						if (lookupDelegate) {
-							delegate = lookupDelegate;
+						// If listening directly to a delegate target, set it
+						if (this._isDelegate(options, key)) {
+							delegate = this._getDelegate(options, key);
 							return "";
 						}
 
 						// If key contains part of the lookup path, remove it.
 						// This is needed for bindings like {viewModel.foo} in can-component's Control.
-						key = this._removeLookupFromKey(key);
+						key = this._removeDelegateFromKey(key);
 
 						// set the parent (where the key will be read from)
 						parent = this._lookup(options)[0];
@@ -229,14 +227,17 @@ var Control = Construct.extend(
 		_lookup: function (options) {
 			return [options, window];
 		},
-		// strip parts of the lookup path from key
-		// does nothing by default
-		_removeLookupFromKey: function (key) {
+		// strip strings that represent delegates from the key
+		_removeDelegateFromKey: function (key) {
 			return key;
 		},
-		// if the key is an object in the lookup path, return it
-		_inLookup: function (options, key) {
-			return null;
+		// return whether the key is a delegate
+		_isDelegate: function(options, key) {
+			return false;
+		},
+		// return the delegate object for a given key
+		_getDelegate: function(options, key) {
+			return undefined;
 		},
 		// ## can.Control.processors
 		//
