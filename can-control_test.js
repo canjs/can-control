@@ -9,6 +9,7 @@ var domMutate = require('can-util/dom/mutate/');
 var canEvent = require('can-event');
 var types = require("can-util/js/types/types");
 var CanMap = require('can-map');
+var DefineMap = require('can-define/map/');
 
 QUnit.module('can-control',{
     setup: function(){
@@ -392,4 +393,76 @@ test("{element} event handling", function() {
 
 	canEvent.trigger.call(div, "click");
 	canEvent.trigger.call(p, "click");
+});
+
+test("Passing a Map as options works", function() {
+	expect(2);
+	stop();
+
+	var MyControl = Control.extend({
+		defaults: {
+			testEndEvent: 'mouseleave'
+		}
+	}, {
+		'{element} {eventType}': function(){
+			ok(true, 'catches handler from options');
+		},
+		'{element} {testEndEvent}': function(){
+			ok(true, 'catches handler from defaults');
+			start();
+		}
+	});
+	var map = new CanMap({
+		eventType: 'touchstart'
+	});
+
+	var div = document.createElement('div');
+
+	new MyControl(div, map);
+
+	canEvent.trigger.call(div, 'mouseenter');
+
+	map.attr('eventType', 'click');
+
+	canEvent.trigger.call(div, 'click');
+
+	canEvent.trigger.call(div, 'mouseleave');
+});
+
+test("Passing a DefineMap as options works", function() {
+	expect(2);
+	stop();
+
+	var MyControl = Control.extend({
+		defaults: {
+			testEndEvent: 'mouseleave'
+		}
+	}, {
+		'{element} {eventType}': function(){
+			ok(true, 'catches handler from options');
+		},
+		'{element} {testEndEvent}': function(){
+			ok(true, 'catches handler from defaults');
+			start();
+		}
+	});
+	var MyMap = DefineMap.extend({
+		eventType: 'string',
+		testEndEvent: 'string'
+	});
+
+	var map = new MyMap();
+	map.eventType = 'touchstart';
+
+	var div = document.createElement('div');
+
+	new MyControl(div, map);
+
+	canEvent.trigger.call(div, 'mouseenter');
+
+	map.eventType = 'click';
+
+	canEvent.trigger.call(div, 'click');
+
+	canEvent.trigger.call(div, 'mouseleave');
 });
