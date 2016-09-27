@@ -3,6 +3,7 @@
 @description Options used to configure a control.
 
 @body
+## Options Object
 
 The `this.options` property is an Object that contains
 configuration data passed to a control when it is
@@ -39,3 +40,30 @@ the defaults' message property is used.
 	});
 
 	new Greeting("#greeting");
+
+## Options Observable
+An observable [can-map CanMap] or [can-define/map/map DefineMap] can also be passed instead of an options object.
+
+In the following example, the defaults' message property is set on the [can-define/map/map DefineMap] options observable, which is then set directly as `this.options`:
+
+```
+	var GreetingControl = Control.extend({
+		defaults: {
+			message: 'Hello'
+		}
+	}, {
+		init: function(){
+			this.element.text( this.options.message + ' ' + this.options.name )
+		}
+	});
+
+	var GreetingMap = DefineMap.extend({
+		message: 'string',
+		name: 'string'
+	});
+
+	var data = new GreetingMap();
+	data.name = 'Kevin';
+
+	new GreetingControl('#greeting', data);
+```

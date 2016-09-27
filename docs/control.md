@@ -43,8 +43,9 @@ instead, you call it on constructor functions extended from `Control`.
 
 @param {HTMLElement|can-view-nodelist|CSSSelectorString} element Specifies the element the control will be created on.
 
-@param {Object} [options] Option values merged with [can-control.defaults Control.defaults]
-and set as [can-control::options this.options].
+@param {Object|can-map|can-define/map/map} [options] Option values merged with [can-control.defaults Control.defaults]
+and set as [can-control::options this.options]. If options is an observable ([can-map CanMap] / [can-define/map/map DefineMap]), any values from [can-control.defaults defaults] that do not exist on the observable will be set. The observable will then be set as [can-control::options this.options].
+
 
 @return {can-control} A new instance of the constructor function extending Control.
 

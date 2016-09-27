@@ -173,7 +173,7 @@ var Control = Construct.extend(
 
 						// if the parent is not an observable and we don't have a value, show a warning
 						// in this situation, it is not possible for the event handler to be triggered
-						if (!parent || !parent.on && !value) {
+						if (!parent || !types.isMapLike(parent) && !value) {
 							//!steal-remove-start
 							dev.log('can/control/control.js: No property found for handling ' + methodName);
 							//!steal-remove-end
@@ -306,7 +306,16 @@ var Control = Construct.extend(
 			// in [can.Control.prototype.setup setup].
 			//
 			// If no `options` value is used during creation, the value in `defaults` is used instead
-			this.options = assign( assign({}, cls.defaults), options);
+			if (types.isMapLike(options)) {
+				for (var prop in cls.defaults) {
+					if (!options.hasOwnProperty(prop)) {
+						observeReader.set(options, prop, cls.defaults[prop]);
+					}
+				}
+				this.options = options;
+			} else {
+				this.options = assign( assign({}, cls.defaults), options);
+			}
 
 			this.on();
 

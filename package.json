@@ -54,6 +54,7 @@
   },
   "devDependencies": {
     "bit-docs": "0.0.6",
+    "can-define": "^0.8.2",
     "can-map": "^3.0.0-pre.9",
     "cssify": "^1.0.2",
     "done-serve": "^0.2.4",
