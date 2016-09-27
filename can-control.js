@@ -189,6 +189,10 @@ var Control = Construct.extend(
 						}
 					}.bind(this));
 
+					// removing spaces that get added when converting
+					// `{element} click` -> ` click`
+					name = name.trim();
+
 					// Get the name of the `event` we're listening to.
 					var parts = name.split(/\s+/g),
 						event = parts.pop();
@@ -233,7 +237,7 @@ var Control = Construct.extend(
 		},
 		// return whether the key is a delegate
 		_isDelegate: function(options, key) {
-			return false;
+			return key === 'element';
 		},
 		// return the delegate object for a given key
 		_getDelegate: function(options, key) {

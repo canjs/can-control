@@ -77,7 +77,7 @@ original element.
 		init: function() {
 			this.element //-> the div
 		},
-		".option click": function() {
+		"{element} .option click": function() {
 			// event handler bound on the div
 		},
 		destroy: function() {

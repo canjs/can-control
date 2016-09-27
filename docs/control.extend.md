@@ -12,7 +12,7 @@ function directly. The most common property to add is [can-control.defaults].
 @param {Object} instanceProperties An object of properties and methods that belong to 
 instances of the `Control` constructor function. These properties are added to the
 control's `prototype` object. Properties that
-look like event handlers (ex: `"click"` or `"li mouseenter"`) are setup
+look like event handlers (ex: `"{element} click"` or `"{element} li mouseenter"`) are setup
 as event handlers.
 
 @return {function(new:can-construct,element,options)} A control constructor function that has been
@@ -37,7 +37,7 @@ extended with the provided `staticProperties` and `instanceProperties`.
          this.count = 0;
          this.element.text("click me")
       },
-      "click": function(){
+      "{element} click": function(){
          this.count++;
          this.element.text("click count = "+this.count)
       }
@@ -55,7 +55,7 @@ extended with the provided `staticProperties` and `instanceProperties`.
         this.count = 0;
         this.element.text(this.options.eventType+" me")
       },
-      "{eventType}": function(){
+      "{element} {eventType}": function(){
          this.count++;
          this.element.text(this.options.eventType+
            " count = "+
