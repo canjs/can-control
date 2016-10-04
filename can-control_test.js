@@ -413,19 +413,18 @@ test("Passing a Map as options works", function() {
 		}
 	});
 	var map = new CanMap({
-		eventType: 'touchstart'
+		eventType: 'click'
 	});
 
 	var div = document.createElement('div');
 
 	new MyControl(div, map);
 
+	// change event declared in options map and trigger it
+	map.attr('eventType', 'mouseenter');
 	canEvent.trigger.call(div, 'mouseenter');
 
-	map.attr('eventType', 'click');
-
-	canEvent.trigger.call(div, 'click');
-
+	// trigger event from defaults
 	canEvent.trigger.call(div, 'mouseleave');
 });
 
@@ -452,17 +451,16 @@ test("Passing a DefineMap as options works", function() {
 	});
 
 	var map = new MyMap();
-	map.eventType = 'touchstart';
+	map.eventType = 'click';
 
 	var div = document.createElement('div');
 
 	new MyControl(div, map);
 
-	canEvent.trigger.call(div, 'mouseenter');
+	// change event declared in options map and trigger it
+	map.eventType = 'mousenter';
+	canEvent.trigger.call(div, 'mousenter');
 
-	map.eventType = 'click';
-
-	canEvent.trigger.call(div, 'click');
-
+	// trigger event from defaults
 	canEvent.trigger.call(div, 'mouseleave');
 });
