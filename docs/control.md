@@ -1,5 +1,5 @@
 @module {constructor} can-control can-control
-@parent can-legacy
+@parent can-infrastructure
 @download can/route
 @test can/route/test.html
 @test can/control/test.html
