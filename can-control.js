@@ -14,6 +14,7 @@ var isFunction = require("can-util/js/is-function/is-function");
 var each = require("can-util/js/each/each");
 var dev = require("can-util/js/dev/dev");
 var types = require("can-util/js/types/types");
+var get = require("can-util/js/get/get");
 
 var domData = require("can-util/dom/data/data");
 var className = require("can-util/dom/class-name/class-name");
@@ -167,8 +168,8 @@ var Control = Construct.extend(
 						}).value;
 
 						// If `value` is undefined use `string.getObject` to get the value.
-						if (value === undefined) {
-							value = string.getObject(key);
+						if (value === undefined && typeof window !== 'undefined') {
+							value = get(window, key);
 						}
 
 						// if the parent is not an observable and we don't have a value, show a warning
