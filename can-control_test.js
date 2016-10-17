@@ -335,6 +335,7 @@ test("Uses types.wrapElement", function(){
 	});
 
 	var el = document.createElement('div');
+	el.innerHTML = 'Click Me!';
 	new MyControl(el);
 
 	canEvent.trigger.call(el, "click");
