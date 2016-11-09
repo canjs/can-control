@@ -282,7 +282,8 @@ test("drag and drop events", function() {
 	domDispatch.call(draggable, "drop");
 	domDispatch.call(draggable, "dragend");
 });
-if (dev) {
+
+if (System.env.indexOf('production') < 0) {
 	test('Control is logging information in dev mode', function () {
 		expect(2);
 		var oldlog = dev.log;
