@@ -24,16 +24,6 @@
     "release:pre": "npm version prerelease && npm publish"
   },
   "main": "can-control",
-  "browser": {
-    "transform": [
-      "cssify"
-    ]
-  },
-  "browserify": {
-    "transform": [
-      "cssify"
-    ]
-  },
   "keywords": [
     "canjs",
     "canjs-plugin",
@@ -56,7 +46,6 @@
     "bit-docs": "0.0.6",
     "can-define": "^1.0.1",
     "can-map": "^3.0.0-pre.9",
-    "cssify": "^1.0.2",
     "done-serve": "^0.2.4",
     "donejs-cli": "^0.9.5",
     "generator-donejs": "^0.9.0",
