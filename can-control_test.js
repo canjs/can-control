@@ -7,7 +7,7 @@ var dev = require('can-util/js/dev/');
 var domDispatch = require('can-util/dom/dispatch/');
 var domMutate = require('can-util/dom/mutate/');
 var canEvent = require('can-event');
-var types = require("can-util/js/types/types");
+var types = require("can-types");
 var CanMap = require('can-map');
 var DefineMap = require('can-define/map/');
 

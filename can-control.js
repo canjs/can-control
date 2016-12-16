@@ -7,13 +7,13 @@
 
 var Construct = require("can-construct");
 
-var namespace = require("can-util/namespace");
+var namespace = require("can-namespace");
 var string = require("can-util/js/string/string");
 var assign = require("can-util/js/assign/assign");
 var isFunction = require("can-util/js/is-function/is-function");
 var each = require("can-util/js/each/each");
 var dev = require("can-util/js/dev/dev");
-var types = require("can-util/js/types/types");
+var types = require("can-types");
 var get = require("can-util/js/get/get");
 
 var domData = require("can-util/dom/data/data");
