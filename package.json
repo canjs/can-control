@@ -29,11 +29,10 @@
     "canjs-plugin",
     "donejs"
   ],
-  "system": {
+  "steal": {
     "configDependencies": [
       "live-reload"
-    ],
-    "npmAlgorithm": "flat"
+    ]
   },
   "dependencies": {
     "can-compute": "^3.0.4",
@@ -52,10 +51,10 @@
     "donejs-cli": "^0.9.5",
     "generator-donejs": "^0.9.0",
     "jshint": "^2.9.1",
-    "steal": "^0.16.0",
-    "steal-qunit": "^0.1.1",
-    "steal-tools": "^0.16.0",
-    "testee": "^0.3.0"
+    "steal": "^1.2.8",
+    "steal-qunit": "^1.0.1",
+    "steal-tools": "^1.1.2",
+    "testee": "^0.3.1"
   },
   "repository": {
     "type": "git",
