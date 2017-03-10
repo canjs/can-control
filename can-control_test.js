@@ -78,7 +78,6 @@ test('on', 9, function () {
 				this.on('click', 'clicked');
 			},
 			clicked: function (context) {
-                console.log(context);
 				ok(true, 'Controller action delegated click triggered, too');
 			}
 		}),
