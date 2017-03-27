@@ -7,7 +7,7 @@ var dev = require('can-util/js/dev/');
 var domDispatch = require('can-util/dom/dispatch/');
 var domMutate = require('can-util/dom/mutate/');
 var canEvent = require('can-event');
-var types = require("can-util/js/types/types");
+var types = require("can-types");
 var CanMap = require('can-map');
 var DefineMap = require('can-define/map/');
 
@@ -78,7 +78,6 @@ test('on', 9, function () {
 				this.on('click', 'clicked');
 			},
 			clicked: function (context) {
-                console.log(context);
 				ok(true, 'Controller action delegated click triggered, too');
 			}
 		}),
@@ -282,7 +281,8 @@ test("drag and drop events", function() {
 	domDispatch.call(draggable, "drop");
 	domDispatch.call(draggable, "dragend");
 });
-if (dev) {
+
+if (System.env.indexOf('production') < 0) {
 	test('Control is logging information in dev mode', function () {
 		expect(2);
 		var oldlog = dev.log;
@@ -335,9 +335,8 @@ test("Uses types.wrapElement", function(){
 	});
 
 	var el = document.createElement('div');
-	el.id = "foo";
-	document.body.appendChild(el);
-	new MyControl(document.getElementById('foo'));
+	el.innerHTML = 'Click Me!';
+	new MyControl(el);
 
 	canEvent.trigger.call(el, "click");
 });
