@@ -14,7 +14,7 @@ var isFunction = require("can-util/js/is-function/is-function");
 var each = require("can-util/js/each/each");
 var dev = require("can-util/js/dev/dev");
 var types = require("can-util/js/types/types");
-
+var vDom = require("can-util/dom/document/document");
 var domData = require("can-util/dom/data/data");
 var className = require("can-util/dom/class-name/class-name");
 var domEvents = require("can-util/dom/events/events");
@@ -285,12 +285,12 @@ var Control = Construct.extend(
 			if(!element) {
 				dev.warn('can/control/control.js: Creating an instance of a named control without passing an element');
 
-				element = document.createElement('div');
+				element = vDom().createElement('div');
 			}
 			// Retrieve the raw element, then set the plugin name as a class there.
             this.element = cls.convertElement(element);
 
-			if (element && pluginname && pluginname !== 'can_control') {
+			if (pluginname && pluginname !== 'can_control') {
                 className.add.call(element, pluginname);
 			}
 
