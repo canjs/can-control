@@ -205,7 +205,7 @@ var Control = Construct.extend(
 					};
 				}, this);
 
-				if (controlInstance) {	
+				if (controlInstance) {
 					// Create a handler function that we'll use to handle the `change` event on the `readyCompute`.
 					var handler = function(ev, ready) {
 						// unbinds the old binding
@@ -282,11 +282,15 @@ var Control = Construct.extend(
 				pluginname = cls.pluginName || cls.shortName,
 				arr;
 
-			// Retrieve the raw element, then set the plugin name as a class there.
+			if(!element) {
+				dev.warn('can/control/control.js: Creating an instance of a named control without passing an element');
 
+				element = document.createElement('div');
+			}
+			// Retrieve the raw element, then set the plugin name as a class there.
             this.element = cls.convertElement(element);
 
-			if (pluginname && pluginname !== 'can_control') {
+			if (element && pluginname && pluginname !== 'can_control') {
                 className.add.call(element, pluginname);
 			}
 
