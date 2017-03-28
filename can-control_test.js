@@ -463,3 +463,11 @@ test("Passing a DefineMap as options works", function() {
 	// trigger event from defaults
 	canEvent.trigger.call(div, 'mouseleave');
 });
+
+test("Creating an instance of a named control without passing an element", function() {
+
+	var MyControl = Control.extend('MyControl');
+	var myControlInstance = new MyControl();
+
+	ok(myControlInstance.element.className === 'MyControl', "Element has the correct class name");
+});
