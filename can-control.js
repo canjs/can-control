@@ -428,7 +428,9 @@ var Control = Construct.extend(
 			}
 
 			controls = domData.get.call(this.element, "controls");
-			controls.splice(controls.indexOf(this), 1);
+			if (controls) {
+				controls.splice(controls.indexOf(this), 1);
+			}
 
 			canEvent.dispatch.call(this, "destroyed");
 
