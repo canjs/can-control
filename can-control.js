@@ -448,7 +448,7 @@ basicProcessor = function (el, event, selector, methodName, control) {
 };
 
 // Set common events to be processed as a `basicProcessor`
-each(["change", "click", "contextmenu", "dblclick", "keydown", "keyup",
+each(["beforeremove", "change", "click", "contextmenu", "dblclick", "keydown", "keyup",
 	"keypress", "mousedown", "mousemove", "mouseout", "mouseover",
 	"mouseup", "reset", "resize", "scroll", "select", "submit", "focusin",
 	"focusout", "mouseenter", "mouseleave",
