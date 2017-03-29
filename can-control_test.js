@@ -467,7 +467,11 @@ test("Passing a DefineMap as options works", function() {
 test("Creating an instance of a named control without passing an element", function() {
 
 	var MyControl = Control.extend('MyControl');
-	var myControlInstance = new MyControl();
-
-	ok(typeof myControlInstance.element === 'undefined', "Element is not created");
+	try {
+		new MyControl();	
+	}
+	catch(e) {
+		ok(true, 'Caught an exception');
+	}
+	
 });

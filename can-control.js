@@ -284,7 +284,8 @@ var Control = Construct.extend(
 
 			if(!element) {
 				dev.warn('can/control/control.js: Creating an instance of a named control without passing an element');
-				return;
+				
+				throw 'Creating an instance of a named control without passing an element';
 			}
 			// Retrieve the raw element, then set the plugin name as a class there.
       this.element = cls.convertElement(element);
