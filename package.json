@@ -35,7 +35,7 @@
     ]
   },
   "dependencies": {
-    "can-compute": "^3.0.4",
+    "can-compute": "3.0.7",
     "can-construct": "^3.0.4",
     "can-event": "^3.0.1",
     "can-namespace": "1.0.0",
