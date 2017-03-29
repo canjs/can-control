@@ -469,5 +469,5 @@ test("Creating an instance of a named control without passing an element", funct
 	var MyControl = Control.extend('MyControl');
 	var myControlInstance = new MyControl();
 
-	ok(myControlInstance.element.className === 'MyControl', "Element has the correct class name");
+	ok(typeof myControlInstance.element === 'undefined', "Element is not created");
 });
