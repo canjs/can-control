@@ -289,7 +289,7 @@ var Control = Construct.extend(
       this.element = cls.convertElement(element);
 
 			if (pluginname && pluginname !== 'can_control') {
-        className.add.call(element, pluginname);
+				className.add.call(this.element, pluginname);
 			}
 
 			// Set up the 'controls' data on the element. If it does not exist, initialize

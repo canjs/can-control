@@ -5,6 +5,7 @@ var fragment = require('can-util/dom/fragment/');
 var domData = require('can-util/dom/data/');
 var dev = require('can-util/js/dev/');
 var domDispatch = require('can-util/dom/dispatch/');
+var className = require('can-util/dom/class-name/');
 var domMutate = require('can-util/dom/mutate/');
 var canEvent = require('can-event');
 var types = require("can-types");
@@ -494,6 +495,16 @@ test("Creating an instance of a named control without passing an element", funct
 		ok(true, 'Caught an exception');
 	}
 	
+});
+
+test("Creating an instance of a named control passing a selector", function() {
+
+	this.fixture.appendChild( fragment('<div id=\'my-control\'>d</div>') );
+	
+	var MyControl = Control.extend('MyControl');
+	var myControlInstance = new MyControl('#my-control');
+	
+	ok(className.has.call(myControlInstance.element, 'MyControl'), "Element has the correct class name");
 });
 
 test('destroy should not throw when domData is removed (#57)', function () {
