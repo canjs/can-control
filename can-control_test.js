@@ -475,9 +475,13 @@ test("Passing a DefineMap as options works", function() {
 test("Creating an instance of a named control without passing an element", function() {
 
 	var MyControl = Control.extend('MyControl');
-	var myControlInstance = new MyControl();
-
-	ok(myControlInstance.element.className === 'MyControl', "Element has the correct class name");
+	try {
+		new MyControl();	
+	}
+	catch(e) {
+		ok(true, 'Caught an exception');
+	}
+	
 });
 
 test('destroy should not throw when domData is removed (#57)', function () {
