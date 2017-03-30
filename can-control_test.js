@@ -297,10 +297,9 @@ test("beforeremove event", function() {
       ok(true, "beforeremove called");
     }
   });
-  this.fixture.appendChild(fragment('<div id="foo"/>'));
-  new Foo("#foo");
-  var foo = document.getElementById("foo");
-  domDispatch.call(foo, "beforeremove");
+  var el = fragment('<div id="foo"/>');
+  new Foo(el);  
+  domDispatch.call(el, "beforeremove");
 });
 
 if (System.env.indexOf('production') < 0) {
