@@ -290,6 +290,18 @@ test("drag and drop events", function() {
 	domDispatch.call(draggable, "dragend");
 });
 
+test("beforeremove event", function() {
+  expect(1);
+  var Foo = Control.extend("", {
+    "beforeremove": function() {
+      ok(true, "beforeremove called");
+    }
+  });
+  var el = fragment('<div id="foo"/>');
+  new Foo(el);  
+  domDispatch.call(el, "beforeremove");
+});
+
 if (System.env.indexOf('production') < 0) {
 	test('Control is logging information in dev mode', function () {
 		expect(2);
