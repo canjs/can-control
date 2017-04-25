@@ -299,7 +299,7 @@ test("beforeremove event", function() {
     }
   });
   var el = fragment('<div id="foo"/>');
-  new Foo(el);  
+  new Foo(el);
   domDispatch.call(el, "beforeremove");
 });
 
@@ -489,28 +489,30 @@ test("Creating an instance of a named control without passing an element", funct
 
 	var MyControl = Control.extend('MyControl');
 	try {
-		new MyControl();	
+		new MyControl();
 	}
 	catch(e) {
 		ok(true, 'Caught an exception');
 	}
-	
+
 });
 
 test("Creating an instance of a named control passing a selector", function() {
 
 	this.fixture.appendChild( fragment('<div id=\'my-control\'>d</div>') );
-	
+
 	var MyControl = Control.extend('MyControl');
 	var myControlInstance = new MyControl('#my-control');
-	
+
 	ok(className.has.call(myControlInstance.element, 'MyControl'), "Element has the correct class name");
 });
 
 test('destroy should not throw when domData is removed (#57)', function () {
 	var Things = Control.extend({
 		destroy: function(){
-			domData.delete.call(this.element);
+      if (this.element) {
+        domData.delete.call(this.element);
+      }
 			Control.prototype.destroy.call(this);
 		}
 	});
