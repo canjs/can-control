@@ -1,38 +1,30 @@
 {
   "name": "can-control",
+  "description": "Declarative event bindings",
   "version": "3.0.10",
-  "description": "",
-  "homepage": "http://canjs.com",
   "author": {
     "name": "Bitovi",
     "email": "contact@bitovi.com",
     "url": "http://bitovi.com"
   },
-  "scripts": {
-    "preversion": "npm test && npm run build",
-    "version": "git commit -am \"Update dist for release\" && git checkout -b release && git add -f dist/",
-    "postversion": "git push --tags && git checkout master && git branch -D release && git push",
-    "testee": "testee test/test.html --browsers firefox",
-    "test": "npm run jshint && npm run testee",
-    "jshint": "jshint can-control.js can-control_test.js --config",
-    "release:patch": "npm version patch && npm publish",
-    "release:minor": "npm version minor && npm publish",
-    "release:major": "npm version major && npm publish",
-    "build": "node build.js",
-    "document": "bit-docs",
-    "develop": "done-serve --static --develop --port 8080",
-    "release:pre": "npm version prerelease && npm publish"
+  "bit-docs": {
+    "dependencies": {
+      "bit-docs-glob-finder": "^0.0.5",
+      "bit-docs-dev": "^0.0.3",
+      "bit-docs-js": "^0.0.3",
+      "bit-docs-generate-readme": "^0.0.8"
+    },
+    "glob": {
+      "pattern": "**/*.{js,md}",
+      "ignore": "node_modules/**/*"
+    },
+    "readme": {
+      "apis": "./docs/apis.json"
+    },
+    "parent": "can-control"
   },
-  "main": "can-control",
-  "keywords": [
-    "canjs",
-    "canjs-plugin",
-    "donejs"
-  ],
-  "steal": {
-    "configDependencies": [
-      "live-reload"
-    ]
+  "bugs": {
+    "url": "https://github.com/canjs/can-control/issues"
   },
   "dependencies": {
     "can-compute": "^3.0.4",
@@ -56,24 +48,36 @@
     "steal-tools": "^1.1.2",
     "testee": "^0.3.1"
   },
+  "homepage": "http://canjs.com",
+  "keywords": [
+    "canjs",
+    "canjs-plugin",
+    "donejs"
+  ],
+  "license": "MIT",
+  "main": "can-control",
   "repository": {
     "type": "git",
     "url": "git://github.com/canjs/can-control.git"
   },
-  "bit-docs": {
-    "dependencies": {
-      "bit-docs-glob-finder": "^0.0.5",
-      "bit-docs-dev": "^0.0.3",
-      "bit-docs-js": "^0.0.3",
-      "bit-docs-generate-readme": "^0.0.8"
-    },
-    "glob": {
-      "pattern": "**/*.{js,md}",
-      "ignore": "node_modules/**/*"
-    },
-    "readme": {
-      "apis": "./docs/apis.json"
-    },
-    "parent": "can-control"
+  "scripts": {
+    "build": "node build.js",
+    "develop": "done-serve --static --develop --port 8080",
+    "document": "bit-docs",
+    "jshint": "jshint can-control.js can-control_test.js --config",
+    "postversion": "git push --tags && git checkout master && git branch -D release && git push",
+    "preversion": "npm test && npm run build",
+    "release:major": "npm version major && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:patch": "npm version patch && npm publish",
+    "release:pre": "npm version prerelease && npm publish",
+    "test": "npm run jshint && npm run testee",
+    "testee": "testee test/test.html --browsers firefox",
+    "version": "git commit -am \"Update dist for release\" && git checkout -b release && git add -f dist/"
+  },
+  "steal": {
+    "configDependencies": [
+      "live-reload"
+    ]
   }
 }
