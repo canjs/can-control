@@ -66,7 +66,7 @@
     "develop": "done-serve --static --develop --port 8080",
     "document": "bit-docs",
     "jshint": "jshint can-control.js can-control_test.js --config",
-    "postversion": "git push --tags && git checkout can-reflect && git branch -D release && git push",
+    "postversion": "git push --tags && git checkout master && git branch -D release && git push",
     "preversion": "npm test && npm run build",
     "release:major": "npm version major && npm publish",
     "release:minor": "npm version minor && npm publish",
