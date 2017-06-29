@@ -20,7 +20,7 @@ var className = require("can-util/dom/class-name/class-name");
 var domEvents = require("can-util/dom/events/events");
 var canEvent = require("can-event");
 var canCompute = require("can-compute");
-var observeReader = require("can-observation/reader/reader");
+var observeReader = require("can-stache-key");
 var canReflect = require("can-reflect");
 var processors;
 
