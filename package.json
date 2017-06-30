@@ -1,48 +1,30 @@
 {
   "name": "can-control",
   "description": "Declarative event bindings",
-  "version": "3.1.0",
+  "version": "3.2.0-pre.0",
   "author": {
     "name": "Bitovi",
     "email": "contact@bitovi.com",
     "url": "http://bitovi.com"
   },
-  "bit-docs": {
-    "dependencies": {
-      "bit-docs-glob-finder": "^0.0.5",
-      "bit-docs-dev": "^0.0.3",
-      "bit-docs-js": "^0.0.3",
-      "bit-docs-generate-readme": "^0.0.8"
-    },
-    "glob": {
-      "pattern": "**/*.{js,md}",
-      "ignore": "node_modules/**/*"
-    },
-    "readme": {
-      "apis": "./docs/apis.json"
-    },
-    "parent": "can-control"
-  },
   "bugs": {
     "url": "https://github.com/canjs/can-control/issues"
   },
   "dependencies": {
-    "can-compute": "^3.1.0-pre.7",
+    "can-compute": "^3.3.0-pre.1",
     "can-construct": "^3.2.0-pre.0",
     "can-event": "^3.5.0-pre.2",
     "can-namespace": "1.0.0",
-    "can-observation": "^3.2.0-pre.10",
-    "can-reflect": "^1.0.0-pre.2",
+    "can-observation": "^3.3.0-pre.1",
+    "can-reflect": "^1.1.0-pre.3",
     "can-types": "^1.1.0-pre.2",
-    "can-util": "^3.9.0-pre.4"
+    "can-util": "^3.9.0-pre.4",
+	"can-stache-key": "^0.0.2"
   },
   "devDependencies": {
-    "bit-docs": "0.0.7",
-    "can-define": "^1.2.0-pre.3",
-    "can-map": "^3.1.0-pre.8",
+    "can-define": "^1.3.0-pre.1",
+    "can-map": "^3.3.0-pre.1",
     "done-serve": "^0.2.4",
-    "donejs-cli": "^0.9.5",
-    "generator-donejs": "^0.9.0",
     "jshint": "^2.9.1",
     "steal": "^1.2.8",
     "steal-qunit": "^1.0.1",
