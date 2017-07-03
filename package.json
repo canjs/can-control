@@ -11,7 +11,7 @@
     "url": "https://github.com/canjs/can-control/issues"
   },
   "dependencies": {
-    "can-compute": "^3.3.0-pre.1",
+    "can-compute": "^3.3.1",
     "can-construct": "^3.2.0-pre.0",
     "can-event": "^3.5.0-pre.2",
     "can-namespace": "1.0.0",
