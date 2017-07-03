@@ -16,7 +16,7 @@
     "can-event": "^3.5.0-pre.2",
     "can-namespace": "1.0.0",
     "can-observation": "^3.3.0-pre.1",
-    "can-reflect": "^1.1.0-pre.3",
+    "can-reflect": "^1.2.1",
     "can-types": "^1.1.0-pre.2",
     "can-util": "^3.9.0-pre.4",
     "can-stache-key": "^0.0.2"
