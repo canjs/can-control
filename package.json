@@ -46,7 +46,6 @@
   "scripts": {
     "build": "node build.js",
     "develop": "done-serve --static --develop --port 8080",
-    "document": "bit-docs",
     "jshint": "jshint can-control.js can-control_test.js --config",
     "postversion": "git push --tags && git checkout master && git branch -D release && git push",
     "preversion": "npm test && npm run build",
