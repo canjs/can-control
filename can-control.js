@@ -15,13 +15,13 @@ var each = require("can-util/js/each/each");
 var dev = require("can-util/js/dev/dev");
 var types = require("can-types");
 var get = require("can-util/js/get/get");
-
 var domData = require("can-util/dom/data/data");
 var className = require("can-util/dom/class-name/class-name");
 var domEvents = require("can-util/dom/events/events");
 var canEvent = require("can-event");
 var canCompute = require("can-compute");
-var observeReader = require('can-observation/reader/reader');
+var observeReader = require("can-stache-key");
+var canReflect = require("can-reflect");
 var processors;
 
 require("can-util/dom/dispatch/dispatch");
@@ -174,7 +174,7 @@ var Control = Construct.extend(
 
 						// if the parent is not an observable and we don't have a value, show a warning
 						// in this situation, it is not possible for the event handler to be triggered
-						if (!parent || !types.isMapLike(parent) && !value) {
+						if (!parent || !(canReflect.isObservableLike(parent) && canReflect.isMapLike(parent)) && !value) {
 							//!steal-remove-start
 							dev.log('can/control/control.js: No property found for handling ' + methodName);
 							//!steal-remove-end
@@ -206,7 +206,7 @@ var Control = Construct.extend(
 					};
 				}, this);
 
-				if (controlInstance) {	
+				if (controlInstance) {
 					// Create a handler function that we'll use to handle the `change` event on the `readyCompute`.
 					var handler = function(ev, ready) {
 						// unbinds the old binding
@@ -283,12 +283,14 @@ var Control = Construct.extend(
 				pluginname = cls.pluginName || cls.shortName,
 				arr;
 
+			if (!element) {
+				throw new Error('Creating an instance of a named control without passing an element');
+			}
 			// Retrieve the raw element, then set the plugin name as a class there.
-
-            this.element = cls.convertElement(element);
+      this.element = cls.convertElement(element);
 
 			if (pluginname && pluginname !== 'can_control') {
-                className.add.call(element, pluginname);
+				className.add.call(this.element, pluginname);
 			}
 
 			// Set up the 'controls' data on the element. If it does not exist, initialize
@@ -307,7 +309,7 @@ var Control = Construct.extend(
 			// in [can.Control.prototype.setup setup].
 			//
 			// If no `options` value is used during creation, the value in `defaults` is used instead
-			if (types.isMapLike(options)) {
+			if (canReflect.isObservableLike(options) && canReflect.isMapLike(options)) {
 				for (var prop in cls.defaults) {
 					if (!options.hasOwnProperty(prop)) {
 						observeReader.set(options, prop, cls.defaults[prop]);
@@ -424,7 +426,9 @@ var Control = Construct.extend(
 			}
 
 			controls = domData.get.call(this.element, "controls");
-			controls.splice(controls.indexOf(this), 1);
+			if (controls) {
+				controls.splice(controls.indexOf(this), 1);
+			}
 
 			canEvent.dispatch.call(this, "destroyed");
 
@@ -442,7 +446,7 @@ basicProcessor = function (el, event, selector, methodName, control) {
 };
 
 // Set common events to be processed as a `basicProcessor`
-each(["change", "click", "contextmenu", "dblclick", "keydown", "keyup",
+each(["beforeremove", "change", "click", "contextmenu", "dblclick", "keydown", "keyup",
 	"keypress", "mousedown", "mousemove", "mouseout", "mouseover",
 	"mouseup", "reset", "resize", "scroll", "select", "submit", "focusin",
 	"focusout", "mouseenter", "mouseleave",

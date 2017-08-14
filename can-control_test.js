@@ -5,6 +5,7 @@ var fragment = require('can-util/dom/fragment/');
 var domData = require('can-util/dom/data/');
 var dev = require('can-util/js/dev/');
 var domDispatch = require('can-util/dom/dispatch/');
+var className = require('can-util/dom/class-name/');
 var domMutate = require('can-util/dom/mutate/');
 var canEvent = require('can-event');
 var types = require("can-types");
@@ -19,14 +20,22 @@ QUnit.module('can-control',{
 
 test('data', function () {
 	var Things = Control.extend({});
-    this.fixture.appendChild( fragment('<div id=\'things\'>div<span>span</span></div>') )
+	this.fixture.appendChild( fragment('<div id=\'things\'>div<span>span</span></div>') )
 
-    var things = document.getElementById('things')
-	new Things('#things', {});
-	new Things('#things', {});
+	var things = document.getElementById('things')
+	var c1 = new Things('#things', {});
+	var c2 = new Things('#things', {});
 
 	equal(domData.get.call(things, 'controls')
 		.length, 2, 'there are 2 items in the data array');
+
+	c1.destroy();
+	equal(domData.get.call(things, 'controls')
+		.length, 1, 'there is 1 item in the data array');
+
+	c2.destroy();
+	equal(domData.get.call(things, 'controls')
+		.length, 0, 'there are 0 items in the data array');
 });
 
 test('parameterized actions', function () {
@@ -282,6 +291,18 @@ test("drag and drop events", function() {
 	domDispatch.call(draggable, "dragend");
 });
 
+test("beforeremove event", function() {
+  expect(1);
+  var Foo = Control.extend("", {
+    "beforeremove": function() {
+      ok(true, "beforeremove called");
+    }
+  });
+  var el = fragment('<div id="foo"/>');
+  new Foo(el);
+  domDispatch.call(el, "beforeremove");
+});
+
 if (System.env.indexOf('production') < 0) {
 	test('Control is logging information in dev mode', function () {
 		expect(2);
@@ -462,4 +483,52 @@ test("Passing a DefineMap as options works", function() {
 
 	// trigger event from defaults
 	canEvent.trigger.call(div, 'mouseleave');
+});
+
+test("Creating an instance of a named control without passing an element", function() {
+
+	var MyControl = Control.extend('MyControl');
+	try {
+		new MyControl();
+	}
+	catch(e) {
+		ok(true, 'Caught an exception');
+	}
+
+});
+
+test("Creating an instance of a named control passing a selector", function() {
+
+	this.fixture.appendChild( fragment('<div id=\'my-control\'>d</div>') );
+
+	var MyControl = Control.extend('MyControl');
+	var myControlInstance = new MyControl('#my-control');
+
+	ok(className.has.call(myControlInstance.element, 'MyControl'), "Element has the correct class name");
+});
+
+test('destroy should not throw when domData is removed (#57)', function () {
+	var Things = Control.extend({
+		destroy: function(){
+      if (this.element) {
+        domData.delete.call(this.element);
+      }
+			Control.prototype.destroy.call(this);
+		}
+	});
+	this.fixture.appendChild( fragment('<div id=\'things\'>div<span>span</span></div>') )
+
+	var things = document.getElementById('things')
+	var c1 = new Things('#things', {});
+	new Things('#things', {});
+
+	equal(domData.get.call(things, 'controls')
+		.length, 2, 'there are 2 items in the data array');
+
+	try {
+		c1.destroy();
+		QUnit.ok(true);
+	} catch (e) {
+		QUnit.ok(false, e);
+	}
 });
