@@ -1,5 +1,7 @@
 # can-control
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/canjs/can-control.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/canjs/can-control.png?branch=master)](https://travis-ci.org/canjs/can-control)
 
 
