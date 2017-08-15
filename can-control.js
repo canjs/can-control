@@ -20,7 +20,8 @@ var className = require("can-util/dom/class-name/class-name");
 var domEvents = require("can-util/dom/events/events");
 var canEvent = require("can-event");
 var canCompute = require("can-compute");
-var observeReader = require('can-observation/reader/reader');
+var observeReader = require("can-stache-key");
+var canReflect = require("can-reflect");
 var processors;
 
 require("can-util/dom/dispatch/dispatch");
@@ -173,7 +174,7 @@ var Control = Construct.extend(
 
 						// if the parent is not an observable and we don't have a value, show a warning
 						// in this situation, it is not possible for the event handler to be triggered
-						if (!parent || !types.isMapLike(parent) && !value) {
+						if (!parent || !(canReflect.isObservableLike(parent) && canReflect.isMapLike(parent)) && !value) {
 							//!steal-remove-start
 							dev.log('can/control/control.js: No property found for handling ' + methodName);
 							//!steal-remove-end
@@ -308,7 +309,7 @@ var Control = Construct.extend(
 			// in [can.Control.prototype.setup setup].
 			//
 			// If no `options` value is used during creation, the value in `defaults` is used instead
-			if (types.isMapLike(options)) {
+			if (canReflect.isObservableLike(options) && canReflect.isMapLike(options)) {
 				for (var prop in cls.defaults) {
 					if (!options.hasOwnProperty(prop)) {
 						observeReader.set(options, prop, cls.defaults[prop]);
