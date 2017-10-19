@@ -7,9 +7,8 @@ var dev = require('can-util/js/dev/');
 var domDispatch = require('can-util/dom/dispatch/');
 var className = require('can-util/dom/class-name/');
 var domMutate = require('can-util/dom/mutate/');
-var canEvent = require('can-event');
-var types = require("can-types");
-var CanMap = require('can-map');
+
+var SimpleMap = require('can-simple-map');
 var DefineMap = require('can-define/map/');
 
 QUnit.module('can-control',{
@@ -167,43 +166,39 @@ test('inherit defaults', function () {
 	ok(inst.options.foo === 'bar', 'Instance must inherit defaults from the parent class');
 	ok(inst.options.newProp === 'newVal', 'Instance must have defaults of it`s class');
 });
-var bindable = function (b) {
-	if (window.jQuery) {
-		return b;
-	} else {}
-	return b;
-};
+
 test('on rebinding', 2, function () {
 	var first = true;
 	var Rebinder = Control.extend({
 		'{item} foo': function (item, ev) {
 			if (first) {
-				equal(item.id, 1, 'first item');
+				equal(item.get("id"), 1, 'first item');
 				first = false;
 			} else {
-				equal(item.id, 2, 'first item');
+				equal(item.get("id"), 2, 'first item');
 			}
 		}
 	});
-	var item1 = bindable({
+	var item1 = new SimpleMap({
 		id: 1
 	}),
-		item2 = bindable({
+		item2 = new SimpleMap({
 			id: 2
 		}),
 		rb = new Rebinder(document.createElement('div'), {
 			item: item1
 		});
-	canEvent.trigger.call(item1, 'foo');
+
+    item1.dispatch('foo');
 	rb.options = {
 		item: item2
 	};
 	rb.on();
-	canEvent.trigger.call(item2, 'foo');
+	item2.dispatch('foo');
 });
 test("actions provide method names", function () {
-	var item1 = {};
-	var item2 = {};
+	var item1 = new SimpleMap({});
+	var item2 = new SimpleMap({});
 	var Tester = Control.extend({
 		"{item1} foo": "food",
 		"{item2} bar": "food",
@@ -217,9 +212,8 @@ test("actions provide method names", function () {
 		item1: item1,
 		item2: item2
 	});
-
-	canEvent.trigger.call(item1, "foo");
-	canEvent.trigger.call(item2, "bar");
+    item1.dispatch("foo");
+    item2.dispatch("bar");
 });
 test("Don\'t bind if there are undefined values in templates", function () {
 	var C = Control.extend({}, {
@@ -237,7 +231,7 @@ test("Don\'t bind if there are undefined values in templates", function () {
 	var div = document.createElement('div');
 	new C2(div, {});
 
-	canEvent.trigger.call(div, "click");
+	domDispatch.call(div, "click");
 });
 test('Multiple calls to destroy', 2, function () {
 	var C = Control.extend({
@@ -309,14 +303,14 @@ if (System.env.indexOf('production') < 0) {
 		var oldlog = dev.log;
 		var oldwarn = dev.warn;
 		dev.log = function (text) {
-			equal(text, 'can/control/control.js: No property found for handling {dummy} change', 'Text logged as expected');
+			equal(text, 'can-control: No property found for handling {dummy} change', 'Text logged as expected');
 		};
 		var C = Control.extend({
 			'{dummy} change': function () {}
 		});
 		var instance = new C(document.createElement('div'));
 		dev.warn = function (text) {
-			equal(text, 'can/control/control.js: Control already destroyed');
+			equal(text, 'can-control: Control already destroyed', "control destroyed warning");
 		};
 		instance.destroy();
 		instance.destroy();
@@ -325,64 +319,29 @@ if (System.env.indexOf('production') < 0) {
 	});
 }
 
-test("Uses types.wrapElement", function(){
-	expect(3);
-	var $ = function(element){
-		this.element = element;
-	};
-
-	var wrapElement = types.wrapElement;
-	var unwrapElement = types.unwrapElement;
-
-	types.wrapElement = function(element){
-		return new $(element);
-	};
-
-	types.unwrapElement = function(object){
-		return object.element;
-	};
-
-	var MyControl = Control.extend({
-		init: function(element){
-			ok(element instanceof $, "element is wrapped");
-			ok(this.element instanceof $, "this.element is wrapped");
-		},
-		"click": function(element){
-			types.wrapElement = wrapElement;
-			types.unwrapElement = unwrapElement;
-
-			ok(element instanceof $);
-		}
-	});
-
-	var el = document.createElement('div');
-	el.innerHTML = 'Click Me!';
-	new MyControl(el);
-
-	canEvent.trigger.call(el, "click");
-});
-
 test("event handlers should rebind when target is replaced", function () {
 	var nameChanges = 0;
 
-	var MyControl = Control.extend({
+	var MyControl = Control.extend("MyControl",{
 		"{person.name} first": function () {
 			nameChanges++;
 		},
 		name: function(name) {
-			this.options.person.attr('name', name);
+			this.options.person.set('name', name);
 		}
 	});
 
 	var c = new MyControl(document.createElement('div'), {
-		person: new CanMap({
-			name: { first: 'Kevin' }
+		person: new SimpleMap({
+			name: new SimpleMap({ first: 'Kevin' })
 		})
-	})
+	});
 
-	c.options.person.attr('name.first', 'Tracy');
-	c.name({ first: 'Kim' });
-	c.options.person.attr('name.first', 'Max');
+	c.options.person.get('name').set('first', 'Tracy');
+
+	c.name(new SimpleMap({ first: 'Kim' }));
+
+	c.options.person.get('name').get('first', 'Max');
 
 	equal(nameChanges, 2);
 });
@@ -411,8 +370,8 @@ test("{element} event handling", function() {
 
 	new MyControl(div, { foo: 'bar' });
 
-	canEvent.trigger.call(div, "click");
-	canEvent.trigger.call(p, "click");
+	domDispatch.call(div, "click");
+	domDispatch.call(p, "click");
 });
 
 test("Passing a Map as options works", function() {
@@ -432,7 +391,7 @@ test("Passing a Map as options works", function() {
 			start();
 		}
 	});
-	var map = new CanMap({
+	var map = new SimpleMap({
 		eventType: 'click'
 	});
 
@@ -442,10 +401,10 @@ test("Passing a Map as options works", function() {
 
 	// change event declared in options map and trigger it
 	map.attr('eventType', 'mouseenter');
-	canEvent.trigger.call(div, 'mouseenter');
+	domDispatch.call(div, 'mouseenter');
 
 	// trigger event from defaults
-	canEvent.trigger.call(div, 'mouseleave');
+	domDispatch.call(div, 'mouseleave');
 });
 
 test("Passing a DefineMap as options works", function() {
@@ -479,10 +438,10 @@ test("Passing a DefineMap as options works", function() {
 
 	// change event declared in options map and trigger it
 	map.eventType = 'mousenter';
-	canEvent.trigger.call(div, 'mousenter');
+	domDispatch.call(div, 'mousenter');
 
 	// trigger event from defaults
-	canEvent.trigger.call(div, 'mouseleave');
+	domDispatch.call(div, 'mouseleave');
 });
 
 test("Creating an instance of a named control without passing an element", function() {

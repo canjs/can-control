@@ -13,28 +13,72 @@ var assign = require("can-util/js/assign/assign");
 var isFunction = require("can-util/js/is-function/is-function");
 var each = require("can-util/js/each/each");
 var dev = require("can-util/js/dev/dev");
-var types = require("can-types");
 var get = require("can-util/js/get/get");
 var domData = require("can-util/dom/data/data");
 var className = require("can-util/dom/class-name/class-name");
 var domEvents = require("can-util/dom/events/events");
-var canEvent = require("can-event");
-var canCompute = require("can-compute");
 var observeReader = require("can-stache-key");
 var canReflect = require("can-reflect");
+var Observation = require("can-observation");
+var canSymbol = require("can-symbol");
 var processors;
 
 require("can-util/dom/dispatch/dispatch");
 require("can-util/dom/events/delegate/delegate");
 
+
+var onKeyValueSymbol = canSymbol.for("can.onKeyValue"),
+    offKeyValueSymbol = canSymbol.for("can.offKeyValue"),
+    onEventSymbol = canSymbol.for("can.onEvent"),
+    offEventSymbol = canSymbol.for("can.offEvent");
+
+var canEvent = {
+	on: function(eventName, handler, queue) {
+		var listenWithDOM = domEvents.canAddEventListener.call(this);
+		if(listenWithDOM) {
+            var method = typeof handler === "string" ? "addDelegateListener" : "addEventListener";
+			domEvents[method].call(this, eventName, handler, queue);
+		} else {
+            if(this[onKeyValueSymbol]) {
+                canReflect.onKeyValue(this, eventName, handler, queue);
+            } else if(this[onEventSymbol]) {
+                this[onEventSymbol](eventName, handler, queue);
+            } else if("addEventListener" in this) {
+                this.addEventListener(eventName, handler, queue);
+            } else {
+                throw new Error("can-control: Unable to bind "+eventName);
+            }
+		}
+	},
+	off: function(eventName, handler, queue) {
+
+		var listenWithDOM = domEvents.canAddEventListener.call(this);
+		if(listenWithDOM) {
+            var method = typeof handler === "string" ? "removeDelegateListener" : "removeEventListener";
+			domEvents[method].call(this, eventName, handler, queue);
+		} else {
+
+            if(this[offKeyValueSymbol]) {
+                canReflect.offKeyValue(this, eventName, handler, queue);
+            } else if(this[offEventSymbol]) {
+                this[offEventSymbol](eventName, handler, queue);
+            } else if("removeEventListener" in this) {
+                this.removeEventListener(eventName, handler, queue);
+            } else {
+                throw new Error("can-control: Unable to unbind "+eventName);
+            }
+		}
+	}
+};
+
 // ### bind
 // this helper binds to one element and returns a function that unbinds from that element.
-var bind = function (el, ev, callback) {
+var bind = function (el, ev, callback, queue) {
 
-    canEvent.on.call(el, ev, callback);
+    canEvent.on.call(el, ev, callback, queue);
 
 	return function () {
-        canEvent.off.call(el, ev, callback);
+        canEvent.off.call(el, ev, callback, queue);
 	};
 },
 	slice = [].slice,
@@ -63,7 +107,7 @@ var bind = function (el, ev, callback) {
 
 	basicProcessor;
 
-var Control = Construct.extend(
+var Control = Construct.extend("Control",
 	/**
 	 * @add can.Control
 	 */
@@ -103,12 +147,18 @@ var Control = Construct.extend(
 			if (!isFunction(method)) {
 				method = context[method];
 			}
-
-			return function () {
-				var wrapped = types.wrapElement(this);
+            var Control = this;
+			function controlMethod() {
+				var wrapped = Control.wrapElement(this);
 				context.called = name;
 				return method.apply(context, [wrapped].concat(slice.call(arguments, 0)));
 			};
+            //!steal-remove-start
+        	Object.defineProperty(controlMethod, "name", {
+        		value: canReflect.getName(this) + "["+name+"]",
+        	});
+        	//!steal-remove-end
+            return controlMethod;
 		},
 
 		// ## can.Control._isAction
@@ -133,7 +183,8 @@ var Control = Construct.extend(
 		// * It's called when the Control class is created. for templated method names (e.g., `{window} foo`), it returns null. For non-templated method names it returns the event binding data. That data is added to `this.actions`.
 		// * It is called wehn a control instance is created, but only for templated actions.
 		_action: function(methodName, options, controlInstance) {
-			var readyCompute;
+			var readyCompute,
+                unableToBind;
 
 			// If we don't have options (a `control` instance), we'll run this later. If we have
 			// options, run `can.sub` to replace the action template `{}` with values from the `options`
@@ -141,8 +192,7 @@ var Control = Construct.extend(
 			// In that case, the event name we want will be the last item in that array.
 			paramReplacer.lastIndex = 0;
 			if (options || !paramReplacer.test(methodName)) {
-
-				readyCompute = canCompute(function() {
+                var controlActionData = function() {
 					var delegate;
 
 					// Set the delegate target and get the name of the event we're listening to.
@@ -167,7 +217,7 @@ var Control = Construct.extend(
 							readCompute: false
 						}).value;
 
-						// If `value` is undefined use `string.getObject` to get the value.
+						// If `value` is undefined try to get the value from the window.
 						if (value === undefined && typeof window !== 'undefined') {
 							value = get(window, key);
 						}
@@ -175,9 +225,7 @@ var Control = Construct.extend(
 						// if the parent is not an observable and we don't have a value, show a warning
 						// in this situation, it is not possible for the event handler to be triggered
 						if (!parent || !(canReflect.isObservableLike(parent) && canReflect.isMapLike(parent)) && !value) {
-							//!steal-remove-start
-							dev.log('can/control/control.js: No property found for handling ' + methodName);
-							//!steal-remove-end
+                            unableToBind = true;
 							return null;
 						}
 
@@ -204,20 +252,41 @@ var Control = Construct.extend(
 						parts: [name, parts.join(" "), event],
 						delegate: delegate || undefined
 					};
-				}, this);
+				};
+
+                //!steal-remove-start
+            	Object.defineProperty(controlActionData, "name", {
+            		value: canReflect.getName(controlInstance || this.prototype) + "["+methodName+"].actionData",
+            	});
+            	//!steal-remove-end
+
+				readyCompute = new Observation(controlActionData, this);
+
 
 				if (controlInstance) {
 					// Create a handler function that we'll use to handle the `change` event on the `readyCompute`.
-					var handler = function(ev, ready) {
+					var handler = function(actionData) {
 						// unbinds the old binding
 						controlInstance._bindings.control[methodName](controlInstance.element);
 						// binds the new
-						controlInstance._bindings.control[methodName] = ready.processor(
-							ready.delegate || controlInstance.element,
-							ready.parts[2], ready.parts[1], methodName, controlInstance);
+						controlInstance._bindings.control[methodName] = actionData.processor(
+							actionData.delegate || controlInstance.element,
+							actionData.parts[2], actionData.parts[1], methodName, controlInstance);
 					};
 
-					readyCompute.bind("change", handler);
+                    //!steal-remove-start
+                	Object.defineProperty(handler, "name", {
+                		value: canReflect.getName(controlInstance) + "["+methodName+"].handler",
+                	});
+                	//!steal-remove-end
+
+
+					canReflect.onValue(readyCompute, handler, "mutate");
+                    //!steal-remove-start
+                    if(unableToBind) {
+                        dev.log('can-control: No property found for handling ' + methodName);
+                    }
+                    //!steal-remove-end
 
 					controlInstance._bindings.readyComputes[methodName] = {
 						compute: readyCompute,
@@ -225,7 +294,7 @@ var Control = Construct.extend(
 					};
 				}
 
-				return readyCompute();
+				return readyCompute.get();
 			}
 		},
 		// the lookup path - where templated keys will be looked up
@@ -257,7 +326,13 @@ var Control = Construct.extend(
             element = typeof element === "string" ?
 							document.querySelector(element) : element;
 
-						return types.wrapElement(element);
+						return this.wrapElement(element);
+        },
+        wrapElement: function(el){
+            return el;
+        },
+        unwrapElement: function(el){
+            return el;
         },
         // should be overwritten to look in jquery special events
         isSpecial: function(eventName){
@@ -287,9 +362,9 @@ var Control = Construct.extend(
 				throw new Error('Creating an instance of a named control without passing an element');
 			}
 			// Retrieve the raw element, then set the plugin name as a class there.
-      this.element = cls.convertElement(element);
+            this.element = cls.convertElement(element);
 
-			if (pluginname && pluginname !== 'can_control') {
+			if (pluginname && pluginname !== 'Control') {
 				className.add.call(this.element, pluginname);
 			}
 
@@ -336,7 +411,7 @@ var Control = Construct.extend(
 				var cls = this.constructor,
 					bindings = this._bindings,
 					actions = cls.actions,
-					element = types.unwrapElement(this.element),
+					element = this.constructor.unwrapElement(this.element),
 					destroyCB = Control._shifter(this, "destroy"),
 					funcName, ready;
 
@@ -387,7 +462,7 @@ var Control = Construct.extend(
 		// Unbinds all event handlers on the controller.
 		// This should _only_ be called in combination with .on()
 		off: function () {
-			var el = types.unwrapElement(this.element),
+			var el = this.constructor.unwrapElement(this.element),
 				bindings = this._bindings;
 			if( bindings ) {
 				each(bindings.user || [], function (value) {
@@ -397,7 +472,7 @@ var Control = Construct.extend(
 					value(el);
 				});
 				each(bindings.readyComputes || {}, function(value) {
-					value.compute.unbind("change", value.handler);
+					canReflect.offValue(value.compute, value.handler, "mutate");
 				});
 			}
 			// Adds bindings.
@@ -411,7 +486,7 @@ var Control = Construct.extend(
 		destroy: function () {
 			if (this.element === null) {
 				//!steal-remove-start
-				dev.warn("can/control/control.js: Control already destroyed");
+				dev.warn("can-control: Control already destroyed");
 				//!steal-remove-end
 				return;
 			}
@@ -430,7 +505,7 @@ var Control = Construct.extend(
 				controls.splice(controls.indexOf(this), 1);
 			}
 
-			canEvent.dispatch.call(this, "destroyed");
+			//canEvent.dispatch.call(this, "destroyed");
 
 			this.element = null;
 		}
