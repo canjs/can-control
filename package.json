@@ -45,18 +45,16 @@
     "url": "git://github.com/canjs/can-control.git"
   },
   "scripts": {
-    "build": "node build.js",
     "develop": "done-serve --static --develop --port 8080",
     "jshint": "jshint can-control.js can-control_test.js --config",
-    "postversion": "git push --tags && git checkout master && git branch -D release && git push",
-    "preversion": "npm test && npm run build",
+    "preversion": "npm test",
+    "postpublish": "git push --tags && git push",
     "release:major": "npm version major && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:patch": "npm version patch && npm publish",
     "release:pre": "npm version prerelease && npm publish --tag=pre",
     "test": "npm run detect-cycle && npm run jshint && npm run testee",
     "testee": "testee test/test.html --browsers firefox",
-    "version": "git commit -am \"Update dist for release\" && git checkout -b release && git add -f dist/",
     "detect-cycle": "detect-cyclic-packages --ignore done-serve"
   },
   "steal": {
