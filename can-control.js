@@ -152,7 +152,7 @@ var Control = Construct.extend("Control",
 				var wrapped = Control.wrapElement(this);
 				context.called = name;
 				return method.apply(context, [wrapped].concat(slice.call(arguments, 0)));
-			};
+			}
             //!steal-remove-start
         	Object.defineProperty(controlMethod, "name", {
         		value: canReflect.getName(this) + "["+name+"]",
