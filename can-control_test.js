@@ -10,6 +10,7 @@ var domMutate = require('can-util/dom/mutate/');
 
 var SimpleMap = require('can-simple-map');
 var DefineMap = require('can-define/map/');
+var SimpleObservable = require("can-simple-observable");
 
 QUnit.module('can-control',{
     setup: function(){
@@ -490,4 +491,19 @@ test('destroy should not throw when domData is removed (#57)', function () {
 	} catch (e) {
 		QUnit.ok(false, e);
 	}
+});
+
+QUnit.test("can watch SimpleObservable", function(){
+    var MyControl = Control.extend({
+		"{simple}": function(simple, newVal){
+			QUnit.equal(newVal, 6);
+		}
+	});
+
+	var div = document.createElement('div');
+    var simple = new SimpleObservable(5);
+
+	new MyControl(div, { simple: simple });
+
+    simple.set(6);
 });

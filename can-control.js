@@ -30,7 +30,9 @@ require("can-util/dom/events/delegate/delegate");
 var onKeyValueSymbol = canSymbol.for("can.onKeyValue"),
     offKeyValueSymbol = canSymbol.for("can.offKeyValue"),
     onEventSymbol = canSymbol.for("can.onEvent"),
-    offEventSymbol = canSymbol.for("can.offEvent");
+    offEventSymbol = canSymbol.for("can.offEvent"),
+    onValueSymbol = canSymbol.for("can.onValue"),
+    offValueSymbol = canSymbol.for("can.offValue");
 
 var canEvent = {
 	on: function(eventName, handler, queue) {
@@ -46,7 +48,11 @@ var canEvent = {
             } else if("addEventListener" in this) {
                 this.addEventListener(eventName, handler, queue);
             } else {
-                throw new Error("can-control: Unable to bind "+eventName);
+                if(!eventName && this[onValueSymbol]) {
+                    canReflect.onValue(this, handler);
+                } else {
+                    throw new Error("can-control: Unable to bind "+eventName);
+                }
             }
 		}
 	},
@@ -65,7 +71,12 @@ var canEvent = {
             } else if("removeEventListener" in this) {
                 this.removeEventListener(eventName, handler, queue);
             } else {
-                throw new Error("can-control: Unable to unbind "+eventName);
+                if(!eventName && this[offValueSymbol]) {
+                    canReflect.offValue(this, handler);
+                } else {
+                    throw new Error("can-control: Unable to unbind "+eventName);
+                }
+
             }
 		}
 	}
