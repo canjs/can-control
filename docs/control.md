@@ -1,5 +1,6 @@
 @module {constructor} can-control can-control
-@parent can-infrastructure
+@parent can-dom-utilities
+@collection can-infrastructure
 @download can/route
 @test can/route/test.html
 @test can/control/test.html
