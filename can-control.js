@@ -119,9 +119,6 @@ var bind = function (el, ev, callback, queue) {
 	basicProcessor;
 
 var Control = Construct.extend("Control",
-	/**
-	 * @add can.Control
-	 */
 	// ## *static functions*
 	/**
 	 * @static
