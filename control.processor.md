@@ -17,3 +17,5 @@ specified by the templated event handler (`"{object}"`).
 @param {can.Control} control The Control the event is bound on.
 
 @return {function()} A callback function that unbinds any event handlers bound within this processor.
+
+@hide
