@@ -1,7 +1,7 @@
 {
   "name": "can-control",
   "description": "Declarative event bindings",
-  "version": "4.0.0-pre.2",
+  "version": "4.0.0-pre.3",
   "author": {
     "name": "Bitovi",
     "email": "contact@bitovi.com",
