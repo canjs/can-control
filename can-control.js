@@ -6,81 +6,24 @@
 // ## helpers
 
 var Construct = require("can-construct");
-
 var namespace = require("can-namespace");
+var assign = require("can-assign");
+var observeReader = require("can-stache-key");
+var canReflect = require("can-reflect");
+var Observation = require("can-observation");
+var canEvent = require("can-event-queue/map/legacy/legacy");
+var dev = require('can-log/dev/dev');
+
 var string = require("can-util/js/string/string");
-var assign = require("can-util/js/assign/assign");
-var isFunction = require("can-util/js/is-function/is-function");
-var each = require("can-util/js/each/each");
-var dev = require("can-util/js/dev/dev");
 var get = require("can-util/js/get/get");
 var domData = require("can-util/dom/data/data");
 var className = require("can-util/dom/class-name/class-name");
 var domEvents = require("can-util/dom/events/events");
-var observeReader = require("can-stache-key");
-var canReflect = require("can-reflect");
-var Observation = require("can-observation");
-var canSymbol = require("can-symbol");
+
 var processors;
 
 require("can-util/dom/dispatch/dispatch");
 require("can-util/dom/events/delegate/delegate");
-
-
-var onKeyValueSymbol = canSymbol.for("can.onKeyValue"),
-    offKeyValueSymbol = canSymbol.for("can.offKeyValue"),
-    onEventSymbol = canSymbol.for("can.onEvent"),
-    offEventSymbol = canSymbol.for("can.offEvent"),
-    onValueSymbol = canSymbol.for("can.onValue"),
-    offValueSymbol = canSymbol.for("can.offValue");
-
-var canEvent = {
-	on: function(eventName, handler, queue) {
-		var listenWithDOM = domEvents.canAddEventListener.call(this);
-		if(listenWithDOM) {
-            var method = typeof handler === "string" ? "addDelegateListener" : "addEventListener";
-			domEvents[method].call(this, eventName, handler, queue);
-		} else {
-            if(this[onKeyValueSymbol]) {
-                canReflect.onKeyValue(this, eventName, handler, queue);
-            } else if(this[onEventSymbol]) {
-                this[onEventSymbol](eventName, handler, queue);
-            } else if("addEventListener" in this) {
-                this.addEventListener(eventName, handler, queue);
-            } else {
-                if(!eventName && this[onValueSymbol]) {
-                    canReflect.onValue(this, handler);
-                } else {
-                    throw new Error("can-control: Unable to bind "+eventName);
-                }
-            }
-		}
-	},
-	off: function(eventName, handler, queue) {
-
-		var listenWithDOM = domEvents.canAddEventListener.call(this);
-		if(listenWithDOM) {
-            var method = typeof handler === "string" ? "removeDelegateListener" : "removeEventListener";
-			domEvents[method].call(this, eventName, handler, queue);
-		} else {
-
-            if(this[offKeyValueSymbol]) {
-                canReflect.offKeyValue(this, eventName, handler, queue);
-            } else if(this[offEventSymbol]) {
-                this[offEventSymbol](eventName, handler, queue);
-            } else if("removeEventListener" in this) {
-                this.removeEventListener(eventName, handler, queue);
-            } else {
-                if(!eventName && this[offValueSymbol]) {
-                    canReflect.offValue(this, handler);
-                } else {
-                    throw new Error("can-control: Unable to unbind "+eventName);
-                }
-
-            }
-		}
-	}
-};
 
 // ### bind
 // this helper binds to one element and returns a function that unbinds from that element.
@@ -152,7 +95,7 @@ var Control = Construct.extend("Control",
 		_shifter: function (context, name) {
 			var method = typeof name === "string" ? context[name] : name;
 
-			if (!isFunction(method)) {
+			if (typeof method !== "function") {
 				method = context[method];
 			}
             var Control = this;
@@ -179,7 +122,7 @@ var Control = Construct.extend("Control",
 				type = typeof val;
 
 			return (methodName !== 'constructor') &&
-			(type === "function" || (type === "string" && isFunction(this.prototype[val]))) &&
+			(type === "function" || (type === "string" && (typeof this.prototype[val] === "function") )) &&
 			!! (Control.isSpecial(methodName) || processors[methodName] || /[^\w]/.test(methodName));
 		},
 		// ## can.Control._action
@@ -473,13 +416,13 @@ var Control = Construct.extend("Control",
 			var el = this.constructor.unwrapElement(this.element),
 				bindings = this._bindings;
 			if( bindings ) {
-				each(bindings.user || [], function (value) {
+				(bindings.user || []).forEach(function (value) {
 					value(el);
 				});
-				each(bindings.control || {}, function (value) {
+				canReflect.eachKey(bindings.control || {}, function (value) {
 					value(el);
 				});
-				each(bindings.readyComputes || {}, function(value) {
+				canReflect.eachKey(bindings.readyComputes || {}, function(value) {
 					canReflect.offValue(value.compute, value.handler, "mutate");
 				});
 			}
@@ -529,14 +472,14 @@ basicProcessor = function (el, event, selector, methodName, control) {
 };
 
 // Set common events to be processed as a `basicProcessor`
-each(["beforeremove", "change", "click", "contextmenu", "dblclick", "keydown", "keyup",
+["beforeremove", "change", "click", "contextmenu", "dblclick", "keydown", "keyup",
 	"keypress", "mousedown", "mousemove", "mouseout", "mouseover",
 	"mouseup", "reset", "resize", "scroll", "select", "submit", "focusin",
 	"focusout", "mouseenter", "mouseleave",
 	"touchstart", "touchmove", "touchcancel", "touchend", "touchleave",
 	"inserted","removed",
 	"dragstart", "dragenter", "dragover", "dragleave", "drag", "drop", "dragend"
-], function (v) {
+].forEach(function (v) {
 	processors[v] = basicProcessor;
 });
 

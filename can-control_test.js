@@ -1,12 +1,12 @@
 /* jshint asi:true*/
 var Control = require('can-control');
 var QUnit = require('steal-qunit');
-var fragment = require('can-util/dom/fragment/');
-var domData = require('can-util/dom/data/');
-var dev = require('can-util/js/dev/');
-var domDispatch = require('can-util/dom/dispatch/');
-var className = require('can-util/dom/class-name/');
-var domMutate = require('can-util/dom/mutate/');
+var fragment = require('can-util/dom/fragment/fragment');
+var domData = require('can-util/dom/data/data');
+var dev = require('can-util/js/dev/dev');
+var domDispatch = require('can-util/dom/dispatch/dispatch');
+var className = require('can-util/dom/class-name/class-name');
+var domMutate = require('can-util/dom/mutate/mutate');
 
 var SimpleMap = require('can-simple-map');
 var DefineMap = require('can-define/map/');
