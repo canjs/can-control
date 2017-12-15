@@ -11,7 +11,7 @@ var assign = require("can-assign");
 var observeReader = require("can-stache-key");
 var canReflect = require("can-reflect");
 var Observation = require("can-observation");
-var canEvent = require("can-event-queue/map/legacy/legacy");
+var canEvent = require("can-event-queue/map/map");
 var dev = require('can-log/dev/dev');
 
 var string = require("can-util/js/string/string");
