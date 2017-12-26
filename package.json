@@ -13,7 +13,9 @@
   "dependencies": {
     "can-assign": "^1.1.1",
     "can-construct": "^3.2.0",
-    "can-event-queue": "<2.0.0",
+    "can-dom-events": "git://github.com/canjs/can-dom-events.git#magneto",
+    "can-dom-mutate": "git://github.com/canjs/can-dom-mutate.git#four",
+    "can-event-queue": "git://github.com/canjs/can-event-queue.git#magneto",
     "can-namespace": "1.0.0",
     "can-observation": "^4.0.0-pre.0",
     "can-reflect": "^1.6.0",

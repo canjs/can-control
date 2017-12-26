@@ -16,14 +16,11 @@ var dev = require('can-log/dev/dev');
 
 var string = require("can-util/js/string/string");
 var get = require("can-util/js/get/get");
-var domData = require("can-util/dom/data/data");
 var className = require("can-util/dom/class-name/class-name");
-var domEvents = require("can-util/dom/events/events");
+var domMutate = require('can-dom-mutate');
 
 var processors;
-
-require("can-util/dom/dispatch/dispatch");
-require("can-util/dom/events/delegate/delegate");
+var controlData = new WeakMap();
 
 // ### bind
 // this helper binds to one element and returns a function that unbinds from that element.
@@ -321,10 +318,10 @@ var Control = Construct.extend("Control",
 
 			// Set up the 'controls' data on the element. If it does not exist, initialize
 			// it to an empty array.
-			arr = domData.get.call(this.element, 'controls');
+			arr = controlData.get(this.element);
 			if (!arr) {
 				arr = [];
-				domData.set.call(this.element, 'controls', arr);
+				controlData.set(this.element, arr);
 			}
 			arr.push(this);
 
@@ -378,9 +375,16 @@ var Control = Construct.extend("Control",
 				}
 
 				// Set up the ability to `destroy` the control later.
-				domEvents.addEventListener.call(element, "removed", destroyCB);
-				bindings.user.push(function (el) {
-					domEvents.removeEventListener.call(el, "removed", destroyCB);
+				var removalDisposal = domMutate.onNodeRemoval(element, function () {
+					if (!element.ownerDocument.contains(element)) {
+						destroyCB();
+					}
+				});
+				bindings.user.push(function () {
+					if (removalDisposal) {
+						removalDisposal();
+						removalDisposal = undefined;
+					}
 				});
 				return bindings.user.length;
 			}
@@ -451,7 +455,7 @@ var Control = Construct.extend("Control",
 				className.remove.call(this.element, pluginName);
 			}
 
-			controls = domData.get.call(this.element, "controls");
+			controls = controlData.get(this.element);
 			if (controls) {
 				controls.splice(controls.indexOf(this), 1);
 			}

@@ -18,26 +18,6 @@ QUnit.module('can-control',{
     }
 });
 
-test('data', function () {
-	var Things = Control.extend({});
-	this.fixture.appendChild( fragment('<div id=\'things\'>div<span>span</span></div>') )
-
-	var things = document.getElementById('things')
-	var c1 = new Things('#things', {});
-	var c2 = new Things('#things', {});
-
-	equal(domData.get.call(things, 'controls')
-		.length, 2, 'there are 2 items in the data array');
-
-	c1.destroy();
-	equal(domData.get.call(things, 'controls')
-		.length, 1, 'there is 1 item in the data array');
-
-	c2.destroy();
-	equal(domData.get.call(things, 'controls')
-		.length, 0, 'there are 0 items in the data array');
-});
-
 test('parameterized actions', function () {
 
 	var called = false,
@@ -478,12 +458,8 @@ test('destroy should not throw when domData is removed (#57)', function () {
 	});
 	this.fixture.appendChild( fragment('<div id=\'things\'>div<span>span</span></div>') )
 
-	var things = document.getElementById('things')
 	var c1 = new Things('#things', {});
 	new Things('#things', {});
-
-	equal(domData.get.call(things, 'controls')
-		.length, 2, 'there are 2 items in the data array');
 
 	try {
 		c1.destroy();
