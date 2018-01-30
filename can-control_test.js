@@ -2,11 +2,10 @@
 var Control = require('can-control');
 var QUnit = require('steal-qunit');
 var fragment = require('can-util/dom/fragment/fragment');
-var domData = require('can-util/dom/data/data');
 var dev = require('can-util/js/dev/dev');
-var domDispatch = require('can-util/dom/dispatch/dispatch');
+var domEvents = require('can-dom-events');
 var className = require('can-util/dom/class-name/class-name');
-var domMutate = require('can-util/dom/mutate/mutate');
+var domMutateNode = require('can-dom-mutate/node');
 
 var SimpleMap = require('can-simple-map');
 var DefineMap = require('can-define/map/');
@@ -33,7 +32,7 @@ test('parameterized actions', function () {
 	new WeirderBind(a, {
 		parameterized: 'sillyEvent'
 	});
-	domDispatch.call(a, 'sillyEvent');
+	domEvents.dispatch(a, 'sillyEvent');
 	ok(called, 'heard the trigger');
 });
 test('windowresize', function () {
@@ -46,7 +45,7 @@ test('windowresize', function () {
 
 	this.fixture.appendChild( fragment( '<div id=\'weird\'>') );
 	new WindowBind('#weird');
-	domDispatch.call(window, 'resize');
+	domEvents.dispatch(window, 'resize');
 	ok(called, 'got window resize event');
 });
 
@@ -82,14 +81,14 @@ test('on', 9, function () {
 		called = true;
 	});
 
-	domDispatch.call(document.querySelector('#els a'), 'click');
+	domEvents.dispatch(document.querySelector('#els a'), 'click');
 
 	ok(called, 'delegate works');
 
-    domMutate.removeChild.call(this.fixture, document.querySelector('#els') );
+    domMutateNode.removeChild.call(this.fixture, document.querySelector('#els') );
 
-	domDispatch.call(div, 'click');
-    domDispatch.call(window, 'click');
+	domEvents.dispatch(div, 'click');
+	domEvents.dispatch(window, 'click');
 
 	rb.destroy();
 });
@@ -105,7 +104,7 @@ test('inherit', function () {
 	this.fixture.appendChild( fragment( '<div id=\'els\'><span id=\'elspan\'><a href=\'#\' id=\'elsa\'>click me</a></span></div>') );
 
 	new Child('#els');
-	domDispatch.call(document.querySelector('#els'), 'click');
+	domEvents.dispatch(document.querySelector('#els'), 'click');
 	ok(called, 'inherited the click method');
 });
 test('space makes event', 1, function () {
@@ -118,7 +117,7 @@ test('space makes event', 1, function () {
 	this.fixture.appendChild( fragment( '<div id=\'els\'><span id=\'elspan\'><a href=\'#\' id=\'elsa\'>click me</a></span></div>') );
 
 	new Dot('#els');
-	domDispatch.call(document.querySelector('#els'), 'foo');
+	domEvents.dispatch(document.querySelector('#els'), 'foo');
 });
 test('custom events with hyphens work', 1, function () {
 	this.fixture.appendChild( fragment( '<div id=\'customEvent\'><span></span></div>') );
@@ -128,7 +127,7 @@ test('custom events with hyphens work', 1, function () {
 		}
 	});
 	new FooBar('#customEvent');
-	domDispatch.call(document.querySelector('#customEvent span'), 'custom-event');
+	domEvents.dispatch(document.querySelector('#customEvent span'), 'custom-event');
 });
 test('inherit defaults', function () {
 	var BASE = Control.extend({
@@ -212,7 +211,7 @@ test("Don\'t bind if there are undefined values in templates", function () {
 	var div = document.createElement('div');
 	new C2(div, {});
 
-	domDispatch.call(div, "click");
+	domEvents.dispatch(div, "click");
 });
 test('Multiple calls to destroy', 2, function () {
 	var C = Control.extend({
@@ -257,13 +256,13 @@ test("drag and drop events", function() {
 
     var draggable = document.getElementById("draggable");
 
-	domDispatch.call(draggable, "dragstart");
-	domDispatch.call(draggable, "dragenter");
-	domDispatch.call(draggable, "dragover");
-	domDispatch.call(draggable, "dragleave");
-	domDispatch.call(draggable, "drag");
-	domDispatch.call(draggable, "drop");
-	domDispatch.call(draggable, "dragend");
+	domEvents.dispatch(draggable, "dragstart");
+	domEvents.dispatch(draggable, "dragenter");
+	domEvents.dispatch(draggable, "dragover");
+	domEvents.dispatch(draggable, "dragleave");
+	domEvents.dispatch(draggable, "drag");
+	domEvents.dispatch(draggable, "drop");
+	domEvents.dispatch(draggable, "dragend");
 });
 
 test("beforeremove event", function() {
@@ -275,7 +274,7 @@ test("beforeremove event", function() {
   });
   var el = fragment('<div id="foo"/>');
   new Foo(el);
-  domDispatch.call(el, "beforeremove");
+  domEvents.dispatch(el, "beforeremove");
 });
 
 if (System.env.indexOf('production') < 0) {
@@ -351,8 +350,8 @@ test("{element} event handling", function() {
 
 	new MyControl(div, { foo: 'bar' });
 
-	domDispatch.call(div, "click");
-	domDispatch.call(p, "click");
+	domEvents.dispatch(div, "click");
+	domEvents.dispatch(p, "click");
 });
 
 test("Passing a Map as options works", function() {
@@ -382,10 +381,10 @@ test("Passing a Map as options works", function() {
 
 	// change event declared in options map and trigger it
 	map.attr('eventType', 'mouseenter');
-	domDispatch.call(div, 'mouseenter');
+	domEvents.dispatch(div, 'mouseenter');
 
 	// trigger event from defaults
-	domDispatch.call(div, 'mouseleave');
+	domEvents.dispatch(div, 'mouseleave');
 });
 
 test("Passing a DefineMap as options works", function() {
@@ -419,10 +418,10 @@ test("Passing a DefineMap as options works", function() {
 
 	// change event declared in options map and trigger it
 	map.eventType = 'mousenter';
-	domDispatch.call(div, 'mousenter');
+	domEvents.dispatch(div, 'mousenter');
 
 	// trigger event from defaults
-	domDispatch.call(div, 'mouseleave');
+	domEvents.dispatch(div, 'mouseleave');
 });
 
 test("Creating an instance of a named control without passing an element", function() {
@@ -445,28 +444,6 @@ test("Creating an instance of a named control passing a selector", function() {
 	var myControlInstance = new MyControl('#my-control');
 
 	ok(className.has.call(myControlInstance.element, 'MyControl'), "Element has the correct class name");
-});
-
-test('destroy should not throw when domData is removed (#57)', function () {
-	var Things = Control.extend({
-		destroy: function(){
-      if (this.element) {
-        domData.delete.call(this.element);
-      }
-			Control.prototype.destroy.call(this);
-		}
-	});
-	this.fixture.appendChild( fragment('<div id=\'things\'>div<span>span</span></div>') )
-
-	var c1 = new Things('#things', {});
-	new Things('#things', {});
-
-	try {
-		c1.destroy();
-		QUnit.ok(true);
-	} catch (e) {
-		QUnit.ok(false, e);
-	}
 });
 
 QUnit.test("can watch SimpleObservable", function(){
