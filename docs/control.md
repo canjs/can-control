@@ -1,7 +1,7 @@
 @module {constructor} can-control can-control
 @parent can-dom-utilities
 @collection can-infrastructure
-@download can/route
+@download can-route
 @test can/route/test.html
 @test can/control/test.html
 @inherits can-construct
@@ -40,7 +40,7 @@ extended with the provided `staticProperties` and `instanceProperties`.
 
 Create an instance of a control. [can.Control.prototype.setup] processes
 the arguments and sets up event binding. Write your initialization
-code in [can.Control.prototype.init]. Note, you never call `new Control()` directly,
+code in `can.Control.prototype.init`. Note, you never call `new Control()` directly,
 instead, you call it on constructor functions extended from `Control`.
 
 @param {HTMLElement|can-view-nodelist|CSSSelectorString} element Specifies the element the control will be created on.
