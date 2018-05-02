@@ -25,7 +25,7 @@
     "can-log": "^1.0.0"
   },
   "devDependencies": {
-    "can-define": "^2.0.0",
+    "can-define": "^2.2.4",
     "can-simple-map": "^4.0.0",
     "can-simple-observable": "^2.0.0",
     "can-queues": "<2.0.0",
