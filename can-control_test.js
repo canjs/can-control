@@ -2,9 +2,8 @@
 var Control = require('can-control');
 var QUnit = require('steal-qunit');
 var fragment = require('can-util/dom/fragment/fragment');
-var dev = require('can-util/js/dev/dev');
+var dev = require('can-log/dev/dev');
 var domEvents = require('can-dom-events');
-var className = require('can-util/dom/class-name/class-name');
 var domMutateNode = require('can-dom-mutate/node');
 
 var SimpleMap = require('can-simple-map');
@@ -442,8 +441,7 @@ test("Creating an instance of a named control passing a selector", function() {
 
 	var MyControl = Control.extend('MyControl');
 	var myControlInstance = new MyControl('#my-control');
-
-	ok(className.has.call(myControlInstance.element, 'MyControl'), "Element has the correct class name");
+	ok(myControlInstance.element.classList.contains('MyControl'), "Element has the correct class name");
 });
 
 QUnit.test("can watch SimpleObservable", function(){

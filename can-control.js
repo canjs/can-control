@@ -14,9 +14,8 @@ var Observation = require("can-observation");
 var canEvent = require("can-event-queue/map/map");
 var dev = require('can-log/dev/dev');
 
-var string = require("can-util/js/string/string");
-var get = require("can-util/js/get/get");
-var className = require("can-util/dom/class-name/class-name");
+var string = require("can-string");
+var get = require("can-key/get/get");
 var domMutate = require('can-dom-mutate');
 
 var processors;
@@ -312,8 +311,8 @@ var Control = Construct.extend("Control",
 			// Retrieve the raw element, then set the plugin name as a class there.
             this.element = cls.convertElement(element);
 
-			if (pluginname && pluginname !== 'Control') {
-				className.add.call(this.element, pluginname);
+			if (pluginname && pluginname !== 'Control' && this.element.classList) {
+                this.element.classList.add(pluginname);
 			}
 
 			// Set up the 'controls' data on the element. If it does not exist, initialize
@@ -451,8 +450,8 @@ var Control = Construct.extend("Control",
 
 			this.off();
 
-			if (pluginName && pluginName !== 'can_control') {
-				className.remove.call(this.element, pluginName);
+			if (pluginName && pluginName !== 'can_control' && this.element.classList) {
+                this.element.classList.remove(pluginName);
 			}
 
 			controls = controlData.get(this.element);
