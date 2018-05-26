@@ -28,7 +28,7 @@
   "devDependencies": {
     "can-util": "^3.9.0",
     "can-define": "^2.0.0",
-    "can-simple-map": "^4.0.0",
+    "can-simple-map": "^4.1.1",
     "can-simple-observable": "^2.0.0",
     "can-queues": "<2.0.0",
     "detect-cyclic-packages": "^1.1.0",
