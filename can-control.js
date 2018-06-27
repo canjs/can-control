@@ -1,3 +1,4 @@
+"use strict";
 // # can/control/control.js
 //
 // Create organized, memory-leak free, rapidly performing, stateful
