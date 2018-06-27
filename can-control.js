@@ -100,12 +100,14 @@ var Control = Construct.extend("Control",
 				context.called = name;
 				return method.apply(context, [wrapped].concat(slice.call(arguments, 0)));
 			}
-            //!steal-remove-start
-        	Object.defineProperty(controlMethod, "name", {
-        		value: canReflect.getName(this) + "["+name+"]",
-        	});
-        	//!steal-remove-end
-            return controlMethod;
+      //!steal-remove-start
+      if(process.env.NODE_ENV !== 'production') {
+	      Object.defineProperty(controlMethod, "name", {
+	      	value: canReflect.getName(this) + "["+name+"]",
+	      });
+	     }
+      //!steal-remove-end
+      return controlMethod;
 		},
 
 		// ## can.Control._isAction
@@ -201,11 +203,13 @@ var Control = Construct.extend("Control",
 					};
 				};
 
-                //!steal-remove-start
-            	Object.defineProperty(controlActionData, "name", {
-            		value: canReflect.getName(controlInstance || this.prototype) + "["+methodName+"].actionData",
-            	});
-            	//!steal-remove-end
+        //!steal-remove-start
+        if(process.env.NODE_ENV !== 'production') {
+		    	Object.defineProperty(controlActionData, "name", {
+		      	value: canReflect.getName(controlInstance || this.prototype) + "["+methodName+"].actionData",
+		      });
+	      }
+        //!steal-remove-end
 
 				readyCompute = new Observation(controlActionData, this);
 
@@ -221,19 +225,23 @@ var Control = Construct.extend("Control",
 							actionData.parts[2], actionData.parts[1], methodName, controlInstance);
 					};
 
-                    //!steal-remove-start
-                	Object.defineProperty(handler, "name", {
-                		value: canReflect.getName(controlInstance) + "["+methodName+"].handler",
-                	});
-                	//!steal-remove-end
+          //!steal-remove-start
+          if(process.env.NODE_ENV !== 'production') {
+          	Object.defineProperty(handler, "name", {
+            	value: canReflect.getName(controlInstance) + "["+methodName+"].handler",
+            });
+          }
+					//!steal-remove-end
 
 
 					canReflect.onValue(readyCompute, handler, "mutate");
-                    //!steal-remove-start
-                    if(unableToBind) {
-                        dev.log('can-control: No property found for handling ' + methodName);
-                    }
-                    //!steal-remove-end
+          //!steal-remove-start
+          if(process.env.NODE_ENV !== 'production') {
+	          if(unableToBind) {
+	          	dev.log('can-control: No property found for handling ' + methodName);
+						}
+					}
+					//!steal-remove-end
 
 					controlInstance._bindings.readyComputes[methodName] = {
 						compute: readyCompute,
@@ -440,7 +448,9 @@ var Control = Construct.extend("Control",
 		destroy: function () {
 			if (this.element === null) {
 				//!steal-remove-start
-				dev.warn("can-control: Control already destroyed");
+				if(process.env.NODE_ENV !== 'production') {
+					dev.warn("can-control: Control already destroyed");
+				}
 				//!steal-remove-end
 				return;
 			}
