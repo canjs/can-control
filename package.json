@@ -16,7 +16,7 @@
     "can-dom-events": "^1.1.0",
     "can-dom-mutate": "<2.0.0",
     "can-event-queue": "<2.0.0",
-    "can-key": "<2.0.0",
+    "can-key": "0.5.0",
     "can-log": "^1.0.0",
     "can-namespace": "1.0.0",
     "can-observation": "^4.0.0",
