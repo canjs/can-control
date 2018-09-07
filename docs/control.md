@@ -255,7 +255,7 @@ The selector can also be templated.
 
 Control can also bind to objects other than `this.element` with
 templated event handlers.  This is _critical_
-for avoiding memory leaks that are so common among MVC applications.  
+for avoiding memory leaks that are so common among MVC applications.
 
 If the value inside `{NAME}` is an object, Control will bind to that
 object to listen for events. For example, the following tooltip listens to
@@ -379,7 +379,5 @@ data by calling `$(document.body).empty()`._
 
 Here is an example of how to build a simple tab widget using Control:
 
-<iframe style="width: 100%; height: 300px"
-        src="http://jsfiddle.net/donejs/kXLLt/embedded/result,html,js,css"
-        allowfullscreen="allowfullscreen"
-        frameborder="0">JSFiddle</iframe>
+<p data-height="265" data-theme-id="0" data-slug-hash="eLExWm" data-default-tab="result" data-user="danieltian" data-pen-title="CanJS 5.0 Hello World" class="codepen">See the Pen <a href="https://codepen.io/danieltian/pen/eLExWm/">CanJS 5.0 Hello World</a> by Daniel Tian (<a href="https://codepen.io/danieltian">@danieltian</a>) on <a href="https://codepen.io">CodePen</a>.</p>
+<script async src="https://static.codepen.io/assets/embed/ei.js"></script>
