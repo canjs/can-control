@@ -18,9 +18,10 @@ var dev = require('can-log/dev/dev');
 var string = require("can-string");
 var get = require("can-key/get/get");
 var domMutate = require('can-dom-mutate');
+var domData = require('can-dom-data-state');
 
 var processors;
-var controlData = new WeakMap();
+
 
 // ### bind
 // this helper binds to one element and returns a function that unbinds from that element.
@@ -326,10 +327,10 @@ var Control = Construct.extend("Control",
 
 			// Set up the 'controls' data on the element. If it does not exist, initialize
 			// it to an empty array.
-			arr = controlData.get(this.element);
+			arr = domData.get.call(this.element, 'controls');
 			if (!arr) {
 				arr = [];
-				controlData.set(this.element, arr);
+				domData.set.call(this.element, 'controls', arr);
 			}
 			arr.push(this);
 
@@ -465,7 +466,7 @@ var Control = Construct.extend("Control",
                 this.element.classList.remove(pluginName);
 			}
 
-			controls = controlData.get(this.element);
+			controls = domData.get.call(this.element, "controls");
 			if (controls) {
 				controls.splice(controls.indexOf(this), 1);
 			}

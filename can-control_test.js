@@ -9,6 +9,7 @@ var domMutateNode = require('can-dom-mutate/node');
 var SimpleMap = require('can-simple-map');
 var DefineMap = require('can-define/map/');
 var SimpleObservable = require("can-simple-observable");
+var domData = require("can-dom-data-state");
 
 QUnit.module('can-control',{
     setup: function(){
@@ -457,4 +458,16 @@ QUnit.test("can watch SimpleObservable", function(){
 	new MyControl(div, { simple: simple });
 
     simple.set(6);
+});
+
+QUnit.test("get controls using domData (#128)", function(){
+    var MyControl = Control.extend({
+	});
+
+	var div = document.createElement('div');
+
+	var instance = new MyControl(div, { });
+
+	QUnit.deepEqual(domData.get.call(div,"controls"), [instance],  "right instance");
+
 });

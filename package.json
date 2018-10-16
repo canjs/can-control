@@ -13,6 +13,7 @@
   "dependencies": {
     "can-assign": "^1.1.1",
     "can-construct": "^3.2.0",
+    "can-dom-data-state": "^1.0.2",
     "can-dom-events": "^1.1.0",
     "can-dom-mutate": "<2.0.0",
     "can-event-queue": "<2.0.0",
@@ -26,11 +27,12 @@
     "can-symbol": "^1.0.0"
   },
   "devDependencies": {
-    "can-util": "^3.9.0",
     "can-define": "^2.0.0",
+    "can-dom-data": "^1.0.1",
+    "can-queues": "<2.0.0",
     "can-simple-map": "^4.0.0",
     "can-simple-observable": "^2.0.0",
-    "can-queues": "<2.0.0",
+    "can-util": "^3.9.0",
     "detect-cyclic-packages": "^1.1.0",
     "jshint": "^2.9.1",
     "steal": "^1.2.8",
