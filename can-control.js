@@ -18,7 +18,10 @@ var dev = require('can-log/dev/dev');
 var string = require("can-string");
 var get = require("can-key/get/get");
 var domMutate = require('can-dom-mutate');
-var domData = require('can-dom-data-state');
+var canSymbol = require('can-symbol');
+
+var controlsSymbol = canSymbol.for("can.controls");
+
 
 var processors;
 
@@ -327,10 +330,10 @@ var Control = Construct.extend("Control",
 
 			// Set up the 'controls' data on the element. If it does not exist, initialize
 			// it to an empty array.
-			arr = domData.get.call(this.element, 'controls');
+			arr = this.element[controlsSymbol];
 			if (!arr) {
 				arr = [];
-				domData.set.call(this.element, 'controls', arr);
+				this.element[controlsSymbol] = arr;
 			}
 			arr.push(this);
 
@@ -466,7 +469,7 @@ var Control = Construct.extend("Control",
                 this.element.classList.remove(pluginName);
 			}
 
-			controls = domData.get.call(this.element, "controls");
+			controls = this.element[controlsSymbol];
 			if (controls) {
 				controls.splice(controls.indexOf(this), 1);
 			}
