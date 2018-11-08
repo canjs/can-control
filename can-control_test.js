@@ -4,7 +4,9 @@ var QUnit = require('steal-qunit');
 var fragment = require('can-util/dom/fragment/fragment');
 var dev = require('can-log/dev/dev');
 var domEvents = require('can-dom-events');
+var domMutate = require('can-dom-mutate');
 var domMutateNode = require('can-dom-mutate/node');
+var globals = require('can-globals');
 
 var SimpleMap = require('can-simple-map');
 var DefineMap = require('can-define/map/');
@@ -470,4 +472,24 @@ QUnit.test("get controls using a symbol (#128)", function(){
 
 	QUnit.deepEqual(div[canSymbol.for("can.controls")], [instance],  "right instance");
 
+});
+
+QUnit.test("Able to handle the documentElement being removed", function() {
+	var doc = document.implementation.createHTMLDocument("Test");
+
+	var div = doc.createElement("div");
+	doc.body.appendChild(div);
+	new Control(div, {});
+
+	globals.setKeyValue('document', doc);
+	var teardown = domMutate.onNodeRemoval(div, function() {
+		teardown();
+		globals.setKeyValue('document', document);
+		QUnit.ok(true, "it worked");
+		start();
+	});
+
+	doc.removeChild(doc.documentElement);
+
+	stop();
 });

@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "can-define": "^2.0.0",
+    "can-globals": "^1.2.0",
     "can-queues": "<2.0.0",
     "can-simple-map": "^4.0.0",
     "can-simple-observable": "^2.0.0",
