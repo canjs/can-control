@@ -388,7 +388,9 @@ var Control = Construct.extend("Control",
 
 				// Set up the ability to `destroy` the control later.
 				var removalDisposal = domMutate.onNodeRemoval(element, function () {
-					if (!element.ownerDocument.documentElement.contains(element)) {
+					var doc = element.ownerDocument;
+					var ownerNode = doc.contains ? doc : doc.documentElement;
+					if (!ownerNode.contains(element)) {
 						destroyCB();
 					}
 				});
