@@ -390,7 +390,7 @@ var Control = Construct.extend("Control",
 				var removalDisposal = domMutate.onNodeRemoval(element, function () {
 					var doc = element.ownerDocument;
 					var ownerNode = doc.contains ? doc : doc.documentElement;
-					if (!ownerNode.contains(element)) {
+					if (!ownerNode || ownerNode.contains(element) === false) {
 						destroyCB();
 					}
 				});
