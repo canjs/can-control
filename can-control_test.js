@@ -479,7 +479,7 @@ QUnit.test("Able to handle the documentElement being removed", function() {
 
 	var div = doc.createElement("div");
 	doc.body.appendChild(div);
-	var inst = new Control(div, {});
+	new Control(div, {});
 
 	globals.setKeyValue('document', doc);
 	var teardown = domMutate.onNodeRemoval(div, function() {
