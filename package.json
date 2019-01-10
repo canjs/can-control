@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "can-assign": "^1.1.1",
-    "can-construct": "^3.2.0",
+    "can-construct": "^3.5.4",
     "can-dom-events": "^1.1.0",
     "can-dom-mutate": "<2.0.0",
     "can-event-queue": "<2.0.0",
