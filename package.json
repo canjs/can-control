@@ -26,7 +26,7 @@
     "can-symbol": "^1.6.1"
   },
   "devDependencies": {
-    "can-define": "^2.0.0",
+    "can-define": "^2.7.8",
     "can-globals": "^1.2.0",
     "can-queues": "<2.0.0",
     "can-simple-map": "^4.0.0",
