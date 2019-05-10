@@ -14,12 +14,12 @@ var SimpleObservable = require("can-simple-observable");
 var canSymbol = require("can-symbol");
 
 QUnit.module('can-control',{
-    setup: function(){
+    beforeEach: function(assert) {
         this.fixture = document.getElementById('qunit-fixture');
     }
 });
 
-test('parameterized actions', function () {
+QUnit.test('parameterized actions', function(assert) {
 
 	var called = false,
 		WeirderBind = Control.extend({
@@ -35,9 +35,9 @@ test('parameterized actions', function () {
 		parameterized: 'sillyEvent'
 	});
 	domEvents.dispatch(a, 'sillyEvent');
-	ok(called, 'heard the trigger');
+	assert.ok(called, 'heard the trigger');
 });
-test('windowresize', function () {
+QUnit.test('windowresize', function(assert) {
 	var called = false,
 		WindowBind = Control.extend('', {
 			'{window} resize': function () {
@@ -48,10 +48,10 @@ test('windowresize', function () {
 	this.fixture.appendChild( fragment( '<div id=\'weird\'>') );
 	new WindowBind('#weird');
 	domEvents.dispatch(window, 'resize');
-	ok(called, 'got window resize event');
+	assert.ok(called, 'got window resize event');
 });
 
-test('on', 9, function () {
+QUnit.test('on', 9, function(assert) {
 	var called = false,
 		DelegateTest = Control.extend({
 			click: function () {}
@@ -59,16 +59,16 @@ test('on', 9, function () {
 		Tester = Control.extend({
 			init: function (el, ops) {
 				this.on(window, 'click', function (ev) {
-					ok(true, 'Got window click event');
+					assert.ok(true, 'Got window click event');
 				});
 				this.on(window, 'click', 'clicked');
 				this.on('click', function () {
-					ok(true, 'Directly clicked element');
+					assert.ok(true, 'Directly clicked element');
 				});
 				this.on('click', 'clicked');
 			},
 			clicked: function (context) {
-				ok(true, 'Controller action delegated click triggered, too');
+				assert.ok(true, 'Controller action delegated click triggered, too');
 			}
 		}),
 		div = document.createElement('div');
@@ -85,7 +85,7 @@ test('on', 9, function () {
 
 	domEvents.dispatch(document.querySelector('#els a'), 'click');
 
-	ok(called, 'delegate works');
+	assert.ok(called, 'delegate works');
 
     domMutateNode.removeChild.call(this.fixture, document.querySelector('#els') );
 
@@ -95,7 +95,7 @@ test('on', 9, function () {
 	rb.destroy();
 });
 
-test('inherit', function () {
+QUnit.test('inherit', function(assert) {
 	var called = false,
 		Parent = Control.extend({
 			click: function () {
@@ -107,13 +107,13 @@ test('inherit', function () {
 
 	new Child('#els');
 	domEvents.dispatch(document.querySelector('#els'), 'click');
-	ok(called, 'inherited the click method');
+	assert.ok(called, 'inherited the click method');
 });
-test('space makes event', 1, function () {
+QUnit.test('space makes event', 1, function(assert) {
 
 	var Dot = Control.extend({
 		' foo': function () {
-			ok(true, 'called');
+			assert.ok(true, 'called');
 		}
 	});
 	this.fixture.appendChild( fragment( '<div id=\'els\'><span id=\'elspan\'><a href=\'#\' id=\'elsa\'>click me</a></span></div>') );
@@ -121,17 +121,17 @@ test('space makes event', 1, function () {
 	new Dot('#els');
 	domEvents.dispatch(document.querySelector('#els'), 'foo');
 });
-test('custom events with hyphens work', 1, function () {
+QUnit.test('custom events with hyphens work', 1, function(assert) {
 	this.fixture.appendChild( fragment( '<div id=\'customEvent\'><span></span></div>') );
 	var FooBar = Control.extend({
 		'span custom-event': function () {
-			ok(true, 'Custom event was fired.');
+			assert.ok(true, 'Custom event was fired.');
 		}
 	});
 	new FooBar('#customEvent');
 	domEvents.dispatch(document.querySelector('#customEvent span'), 'custom-event');
 });
-test('inherit defaults', function () {
+QUnit.test('inherit defaults', function(assert) {
 	var BASE = Control.extend({
 		defaults: {
 			foo: 'bar'
@@ -142,22 +142,22 @@ test('inherit defaults', function () {
 			newProp: 'newVal'
 		}
 	}, {});
-	ok(INHERIT.defaults.foo === 'bar', 'Class must inherit defaults from the parent class');
-	ok(INHERIT.defaults.newProp === 'newVal', 'Class must have own defaults');
+	assert.ok(INHERIT.defaults.foo === 'bar', 'Class must inherit defaults from the parent class');
+	assert.ok(INHERIT.defaults.newProp === 'newVal', 'Class must have own defaults');
 	var inst = new INHERIT(document.createElement('div'), {});
-	ok(inst.options.foo === 'bar', 'Instance must inherit defaults from the parent class');
-	ok(inst.options.newProp === 'newVal', 'Instance must have defaults of it`s class');
+	assert.ok(inst.options.foo === 'bar', 'Instance must inherit defaults from the parent class');
+	assert.ok(inst.options.newProp === 'newVal', 'Instance must have defaults of it`s class');
 });
 
-test('on rebinding', 2, function () {
+QUnit.test('on rebinding', 2, function(assert) {
 	var first = true;
 	var Rebinder = Control.extend({
 		'{item} foo': function (item, ev) {
 			if (first) {
-				equal(item.get("id"), 1, 'first item');
+				assert.equal(item.get("id"), 1, 'first item');
 				first = false;
 			} else {
-				equal(item.get("id"), 2, 'first item');
+				assert.equal(item.get("id"), 2, 'first item');
 			}
 		}
 	});
@@ -178,15 +178,15 @@ test('on rebinding', 2, function () {
 	rb.on();
 	item2.dispatch('foo');
 });
-test("actions provide method names", function () {
+QUnit.test("actions provide method names", function(assert) {
 	var item1 = new SimpleMap({});
 	var item2 = new SimpleMap({});
 	var Tester = Control.extend({
 		"{item1} foo": "food",
 		"{item2} bar": "food",
 		food: function (item, ev, data) {
-			ok(true, "food called")
-			ok(item === item1 || item === item2, "called with an item")
+			assert.ok(true, "food called")
+			assert.ok(item === item1 || item === item2, "called with an item")
 		}
 	});
 
@@ -197,16 +197,16 @@ test("actions provide method names", function () {
     item1.dispatch("foo");
     item2.dispatch("bar");
 });
-test("Don\'t bind if there are undefined values in templates", function () {
+QUnit.test("Don\'t bind if there are undefined values in templates", function(assert) {
 	var C = Control.extend({}, {
 		'{noExistStuff} proc': function () {}
 	});
 	var c = new C(document.createElement('div'));
-	equal(c._bindings.user.length, 1, 'There is only one binding');
+	assert.equal(c._bindings.user.length, 1, 'There is only one binding');
 
 	var C2 = Control.extend({
 		'{noExistStuff} click': function () {
-			ok(false, 'should not fall through to click handler');
+			assert.ok(false, 'should not fall through to click handler');
 		}
 	});
 
@@ -215,10 +215,10 @@ test("Don\'t bind if there are undefined values in templates", function () {
 
 	domEvents.dispatch(div, "click");
 });
-test('Multiple calls to destroy', 2, function () {
+QUnit.test('Multiple calls to destroy', 2, function(assert) {
 	var C = Control.extend({
 		destroy: function () {
-			ok(true);
+			assert.ok(true);
 			Control.prototype.destroy.call(this);
 		}
 	}),
@@ -228,29 +228,29 @@ test('Multiple calls to destroy', 2, function () {
 	c.destroy();
 });
 // Added support for drag and drop events (#1955)
-test("drag and drop events", function() {
-	expect(7);
+QUnit.test("drag and drop events", function(assert) {
+	assert.expect(7);
 	var DragDrop = Control.extend("", {
 		" dragstart": function() {
-			ok(true, "dragstart called");
+			assert.ok(true, "dragstart called");
 		},
 		" dragenter": function() {
-			ok(true, "dragenter called");
+			assert.ok(true, "dragenter called");
 		},
 		" dragover": function() {
-			ok(true, "dragover called");
+			assert.ok(true, "dragover called");
 		},
 		" dragleave": function() {
-			ok(true, "dragleave called");
+			assert.ok(true, "dragleave called");
 		},
 		" drag": function() {
-			ok(true, "drag called");
+			assert.ok(true, "drag called");
 		},
 		" drop": function() {
-			ok(true, "drop called");
+			assert.ok(true, "drop called");
 		},
 		" dragend": function() {
-			ok(true, "dragend called");
+			assert.ok(true, "dragend called");
 		}
 	});
 	this.fixture.appendChild( fragment( '<div id="draggable"/>') );
@@ -267,11 +267,11 @@ test("drag and drop events", function() {
 	domEvents.dispatch(draggable, "dragend");
 });
 
-test("beforeremove event", function() {
-  expect(1);
+QUnit.test("beforeremove event", function(assert) {
+  assert.expect(1);
   var Foo = Control.extend("", {
     "beforeremove": function() {
-      ok(true, "beforeremove called");
+      assert.ok(true, "beforeremove called");
     }
   });
   var el = fragment('<div id="foo"/>');
@@ -280,19 +280,19 @@ test("beforeremove event", function() {
 });
 
 if (System.env.indexOf('production') < 0) {
-	test('Control is logging information in dev mode', function () {
-		expect(2);
+	QUnit.test('Control is logging information in dev mode', function(assert) {
+		assert.expect(2);
 		var oldlog = dev.log;
 		var oldwarn = dev.warn;
 		dev.log = function (text) {
-			equal(text, 'can-control: No property found for handling {dummy} change', 'Text logged as expected');
+			assert.equal(text, 'can-control: No property found for handling {dummy} change', 'Text logged as expected');
 		};
 		var C = Control.extend({
 			'{dummy} change': function () {}
 		});
 		var instance = new C(document.createElement('div'));
 		dev.warn = function (text) {
-			equal(text, 'can-control: Control already destroyed', "control destroyed warning");
+			assert.equal(text, 'can-control: Control already destroyed', "control destroyed warning");
 		};
 		instance.destroy();
 		instance.destroy();
@@ -301,7 +301,7 @@ if (System.env.indexOf('production') < 0) {
 	});
 }
 
-test("event handlers should rebind when target is replaced", function () {
+QUnit.test("event handlers should rebind when target is replaced", function(assert) {
 	var nameChanges = 0;
 
 	var MyControl = Control.extend("MyControl",{
@@ -325,24 +325,24 @@ test("event handlers should rebind when target is replaced", function () {
 
 	c.options.person.get('name').get('first', 'Max');
 
-	equal(nameChanges, 2);
+	assert.equal(nameChanges, 2);
 });
 
-test("{element} event handling", function() {
-	expect(3);
-	stop();
+QUnit.test("{element} event handling", function(assert) {
+	assert.expect(3);
+	var done = assert.async();
 
 	var MyControl = Control.extend({
 		"{element} click": function(element){
 			if (element === this.element) {
-				ok(true, "`{element} click` should catch clicking on the element");
+				assert.ok(true, "`{element} click` should catch clicking on the element");
 			} else {
-				ok(true, "`{element} click` should catch clicking on a child of the element");
+				assert.ok(true, "`{element} click` should catch clicking on a child of the element");
 			}
 		},
 		"{element} p click": function(){
-			ok(true, "`{element} p click` works");
-			start();
+			assert.ok(true, "`{element} p click` works");
+			done();
 		}
 	});
 
@@ -356,9 +356,9 @@ test("{element} event handling", function() {
 	domEvents.dispatch(p, "click");
 });
 
-test("Passing a Map as options works", function() {
-	expect(2);
-	stop();
+QUnit.test("Passing a Map as options works", function(assert) {
+	assert.expect(2);
+	var done = assert.async();
 
 	var MyControl = Control.extend({
 		defaults: {
@@ -366,11 +366,11 @@ test("Passing a Map as options works", function() {
 		}
 	}, {
 		'{element} {eventType}': function(){
-			ok(true, 'catches handler from options');
+			assert.ok(true, 'catches handler from options');
 		},
 		'{element} {testEndEvent}': function(){
-			ok(true, 'catches handler from defaults');
-			start();
+			assert.ok(true, 'catches handler from defaults');
+			done();
 		}
 	});
 	var map = new SimpleMap({
@@ -389,9 +389,9 @@ test("Passing a Map as options works", function() {
 	domEvents.dispatch(div, 'mouseleave');
 });
 
-test("Passing a DefineMap as options works", function() {
-	expect(2);
-	stop();
+QUnit.test("Passing a DefineMap as options works", function(assert) {
+	assert.expect(2);
+	var done = assert.async();
 
 	var MyControl = Control.extend({
 		defaults: {
@@ -399,11 +399,11 @@ test("Passing a DefineMap as options works", function() {
 		}
 	}, {
 		'{element} {eventType}': function(){
-			ok(true, 'catches handler from options');
+			assert.ok(true, 'catches handler from options');
 		},
 		'{element} {testEndEvent}': function(){
-			ok(true, 'catches handler from defaults');
-			start();
+			assert.ok(true, 'catches handler from defaults');
+			done();
 		}
 	});
 	var MyMap = DefineMap.extend({
@@ -426,31 +426,31 @@ test("Passing a DefineMap as options works", function() {
 	domEvents.dispatch(div, 'mouseleave');
 });
 
-test("Creating an instance of a named control without passing an element", function() {
+QUnit.test("Creating an instance of a named control without passing an element", function(assert) {
 
 	var MyControl = Control.extend('MyControl');
 	try {
 		new MyControl();
 	}
 	catch(e) {
-		ok(true, 'Caught an exception');
+		assert.ok(true, 'Caught an exception');
 	}
 
 });
 
-test("Creating an instance of a named control passing a selector", function() {
+QUnit.test("Creating an instance of a named control passing a selector", function(assert) {
 
 	this.fixture.appendChild( fragment('<div id=\'my-control\'>d</div>') );
 
 	var MyControl = Control.extend('MyControl');
 	var myControlInstance = new MyControl('#my-control');
-	ok(myControlInstance.element.classList.contains('MyControl'), "Element has the correct class name");
+	assert.ok(myControlInstance.element.classList.contains('MyControl'), "Element has the correct class name");
 });
 
-QUnit.test("can watch SimpleObservable", function(){
+QUnit.test("can watch SimpleObservable", function(assert) {
     var MyControl = Control.extend({
 		"{simple}": function(simple, newVal){
-			QUnit.equal(newVal, 6);
+			assert.equal(newVal, 6);
 		}
 	});
 
@@ -462,7 +462,7 @@ QUnit.test("can watch SimpleObservable", function(){
     simple.set(6);
 });
 
-QUnit.test("get controls using a symbol (#128)", function(){
+QUnit.test("get controls using a symbol (#128)", function(assert) {
     var MyControl = Control.extend({
 	});
 
@@ -470,11 +470,11 @@ QUnit.test("get controls using a symbol (#128)", function(){
 
 	var instance = new MyControl(div, { });
 
-	QUnit.deepEqual(div[canSymbol.for("can.controls")], [instance],  "right instance");
+	assert.deepEqual(div[canSymbol.for("can.controls")], [instance],  "right instance");
 
 });
 
-QUnit.test("Able to handle the documentElement being removed", function() {
+QUnit.test("Able to handle the documentElement being removed", function(assert) {
 	var doc = document.implementation.createHTMLDocument("Test");
 
 	var div = doc.createElement("div");
@@ -485,11 +485,11 @@ QUnit.test("Able to handle the documentElement being removed", function() {
 	var teardown = domMutate.onNodeRemoval(div, function() {
 		teardown();
 		globals.setKeyValue('document', document);
-		QUnit.ok(true, "it worked");
-		start();
+		assert.ok(true, "it worked");
+		done();
 	});
 
 	doc.removeChild(doc.documentElement);
 
-	stop();
+	var done = assert.async();
 });
