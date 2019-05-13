@@ -51,7 +51,8 @@ QUnit.test('windowresize', function(assert) {
 	assert.ok(called, 'got window resize event');
 });
 
-QUnit.test('on', 9, function(assert) {
+QUnit.test('on', function(assert) {
+	assert.expect(9);
 	var called = false,
 		DelegateTest = Control.extend({
 			click: function () {}
@@ -109,7 +110,8 @@ QUnit.test('inherit', function(assert) {
 	domEvents.dispatch(document.querySelector('#els'), 'click');
 	assert.ok(called, 'inherited the click method');
 });
-QUnit.test('space makes event', 1, function(assert) {
+QUnit.test('space makes event', function(assert) {
+	assert.expect(1);
 
 	var Dot = Control.extend({
 		' foo': function () {
@@ -121,7 +123,8 @@ QUnit.test('space makes event', 1, function(assert) {
 	new Dot('#els');
 	domEvents.dispatch(document.querySelector('#els'), 'foo');
 });
-QUnit.test('custom events with hyphens work', 1, function(assert) {
+QUnit.test('custom events with hyphens work', function(assert) {
+	assert.expect(1);
 	this.fixture.appendChild( fragment( '<div id=\'customEvent\'><span></span></div>') );
 	var FooBar = Control.extend({
 		'span custom-event': function () {
@@ -149,7 +152,8 @@ QUnit.test('inherit defaults', function(assert) {
 	assert.ok(inst.options.newProp === 'newVal', 'Instance must have defaults of it`s class');
 });
 
-QUnit.test('on rebinding', 2, function(assert) {
+QUnit.test('on rebinding', function(assert) {
+	assert.expect(2);
 	var first = true;
 	var Rebinder = Control.extend({
 		'{item} foo': function (item, ev) {
@@ -215,7 +219,8 @@ QUnit.test("Don\'t bind if there are undefined values in templates", function(as
 
 	domEvents.dispatch(div, "click");
 });
-QUnit.test('Multiple calls to destroy', 2, function(assert) {
+QUnit.test('Multiple calls to destroy', function(assert) {
+	assert.expect(2);
 	var C = Control.extend({
 		destroy: function () {
 			assert.ok(true);
@@ -475,6 +480,7 @@ QUnit.test("get controls using a symbol (#128)", function(assert) {
 });
 
 QUnit.test("Able to handle the documentElement being removed", function(assert) {
+	var done = assert.async();
 	var doc = document.implementation.createHTMLDocument("Test");
 
 	var div = doc.createElement("div");
@@ -491,5 +497,4 @@ QUnit.test("Able to handle the documentElement being removed", function(assert) 
 
 	doc.removeChild(doc.documentElement);
 
-	var done = assert.async();
 });
