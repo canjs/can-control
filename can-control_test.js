@@ -1,7 +1,7 @@
 /* jshint asi:true*/
 var Control = require('can-control');
 var QUnit = require('steal-qunit');
-var fragment = require('can-util/dom/fragment/fragment');
+var fragment = require('can-fragment');
 var dev = require('can-log/dev/dev');
 var domEvents = require('can-dom-events');
 var domMutate = require('can-dom-mutate');
