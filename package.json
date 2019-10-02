@@ -1,7 +1,7 @@
 {
   "name": "can-control",
   "description": "Declarative event bindings",
-  "version": "4.4.3",
+  "version": "5.0.0-pre.2",
   "author": {
     "name": "Bitovi",
     "email": "contact@bitovi.com",
@@ -14,7 +14,7 @@
     "can-assign": "^1.1.1",
     "can-construct": "^3.2.0",
     "can-dom-events": "^1.1.0",
-    "can-dom-mutate": "<2.0.0",
+    "can-dom-mutate": "^2.0.0",
     "can-event-queue": "<2.0.0",
     "can-key": "<2.0.0",
     "can-log": "^1.0.0",
