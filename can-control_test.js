@@ -7,6 +7,7 @@ var domEvents = require('can-dom-events');
 var domMutate = require('can-dom-mutate');
 var domMutateNode = require('can-dom-mutate/node');
 var globals = require('can-globals');
+var queues = require('can-queues');
 
 var SimpleMap = require('can-simple-map');
 var DefineMap = require('can-define/map/');
@@ -14,9 +15,9 @@ var SimpleObservable = require("can-simple-observable");
 var canSymbol = require("can-symbol");
 
 QUnit.module('can-control',{
-    beforeEach: function(assert) {
-        this.fixture = document.getElementById('qunit-fixture');
-    }
+	beforeEach: function(assert) {
+		this.fixture = document.getElementById('qunit-fixture');
+	}
 });
 
 QUnit.test('parameterized actions', function(assert) {
@@ -28,7 +29,7 @@ QUnit.test('parameterized actions', function(assert) {
 			}
 		}),
 		a;
-    this.fixture.appendChild( fragment('<div id=\'crazy\'></div>'));
+	this.fixture.appendChild( fragment('<div id=\'crazy\'></div>'));
 
 	a = document.getElementById('crazy');
 	new WeirderBind(a, {
@@ -75,7 +76,7 @@ QUnit.test('on', function(assert) {
 		div = document.createElement('div');
 	this.fixture.appendChild( div );
 
-    var rb = new Tester(div);
+	var rb = new Tester(div);
 	this.fixture.appendChild( fragment( '<div id=\'els\'><span id=\'elspan\'><a href=\'javascript://\' id=\'elsa\'>click me</a></span></div>') );
 
 	var dt = new DelegateTest('#els');
@@ -88,7 +89,7 @@ QUnit.test('on', function(assert) {
 
 	assert.ok(called, 'delegate works');
 
-    domMutateNode.removeChild.call(this.fixture, document.querySelector('#els') );
+	domMutateNode.removeChild.call(this.fixture, document.querySelector('#els') );
 
 	domEvents.dispatch(div, 'click');
 	domEvents.dispatch(window, 'click');
@@ -175,7 +176,7 @@ QUnit.test('on rebinding', function(assert) {
 			item: item1
 		});
 
-    item1.dispatch('foo');
+	item1.dispatch('foo');
 	rb.options = {
 		item: item2
 	};
@@ -198,8 +199,8 @@ QUnit.test("actions provide method names", function(assert) {
 		item1: item1,
 		item2: item2
 	});
-    item1.dispatch("foo");
-    item2.dispatch("bar");
+	item1.dispatch("foo");
+	item2.dispatch("bar");
 });
 QUnit.test("Don\'t bind if there are undefined values in templates", function(assert) {
 	var C = Control.extend({}, {
@@ -227,8 +228,8 @@ QUnit.test('Multiple calls to destroy', function(assert) {
 			Control.prototype.destroy.call(this);
 		}
 	}),
-		div = document.createElement('div'),
-		c = new C(div);
+	div = document.createElement('div'),
+	c = new C(div);
 	c.destroy();
 	c.destroy();
 });
@@ -261,7 +262,7 @@ QUnit.test("drag and drop events", function(assert) {
 	this.fixture.appendChild( fragment( '<div id="draggable"/>') );
 	new DragDrop("#draggable");
 
-    var draggable = document.getElementById("draggable");
+	var draggable = document.getElementById("draggable");
 
 	domEvents.dispatch(draggable, "dragstart");
 	domEvents.dispatch(draggable, "dragenter");
@@ -273,15 +274,15 @@ QUnit.test("drag and drop events", function(assert) {
 });
 
 QUnit.test("beforeremove event", function(assert) {
-  assert.expect(1);
-  var Foo = Control.extend("", {
-    "beforeremove": function() {
-      assert.ok(true, "beforeremove called");
-    }
-  });
-  var el = fragment('<div id="foo"/>');
-  new Foo(el);
-  domEvents.dispatch(el, "beforeremove");
+	assert.expect(1);
+	var Foo = Control.extend("", {
+		"beforeremove": function() {
+			assert.ok(true, "beforeremove called");
+		}
+	});
+	var el = fragment('<div id="foo"/>');
+	new Foo(el);
+	domEvents.dispatch(el, "beforeremove");
 });
 
 if (System.env.indexOf('production') < 0) {
@@ -453,22 +454,22 @@ QUnit.test("Creating an instance of a named control passing a selector", functio
 });
 
 QUnit.test("can watch SimpleObservable", function(assert) {
-    var MyControl = Control.extend({
+	var MyControl = Control.extend({
 		"{simple}": function(simple, newVal){
 			assert.equal(newVal, 6);
 		}
 	});
 
 	var div = document.createElement('div');
-    var simple = new SimpleObservable(5);
+	var simple = new SimpleObservable(5);
 
 	new MyControl(div, { simple: simple });
 
-    simple.set(6);
+	simple.set(6);
 });
 
 QUnit.test("get controls using a symbol (#128)", function(assert) {
-    var MyControl = Control.extend({
+	var MyControl = Control.extend({
 	});
 
 	var div = document.createElement('div');
@@ -497,4 +498,37 @@ QUnit.test("Able to handle the documentElement being removed", function(assert) 
 
 	doc.removeChild(doc.documentElement);
 
+});
+
+QUnit.test("Tearing down while batched does not cause issues", function(assert) {
+	var div = document.createElement('div');
+	var MyControl = Control.extend({
+		"{viewModel.items} remove": function() { }
+	});
+
+	var vm = new (DefineMap.extend({
+		items: {
+			Type: DefineMap,
+			get default() {
+				return { xyzzzy: "xyzzzzy" };
+			}
+		}
+	}))();
+
+	new MyControl(div, { viewModel: vm });
+	document.body.appendChild(div);
+
+	queues.batch.start();
+	vm.items = {};
+	queues.domQueue.enqueue(function() {
+		document.body.removeChild(div);
+		domMutate.flushRecords();
+	}, null, [], { element: document.body });
+
+	try {
+		queues.batch.stop();
+		assert.ok(true, "Succeeded without error");
+	} catch(e) {
+		assert.ok(false, "Error caught");
+	}
 });
