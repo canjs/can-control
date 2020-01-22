@@ -14,6 +14,7 @@ var canReflect = require("can-reflect");
 var Observation = require("can-observation");
 var canEvent = require("can-event-queue/map/map");
 var dev = require('can-log/dev/dev');
+var queues = require('can-queues');
 
 var string = require("can-string");
 var get = require("can-key/get/get");
@@ -223,7 +224,9 @@ var Control = Construct.extend("Control",
 					// Create a handler function that we'll use to handle the `change` event on the `readyCompute`.
 					var handler = function(actionData) {
 						// unbinds the old binding
-						controlInstance._bindings.control[methodName](controlInstance.element);
+						if(controlInstance._bindings.control[methodName]) {
+							controlInstance._bindings.control[methodName](controlInstance.element);
+						}
 						// binds the new
 						controlInstance._bindings.control[methodName] = actionData.processor(
 							actionData.delegate || controlInstance.element,
@@ -391,7 +394,14 @@ var Control = Construct.extend("Control",
 					var doc = element.ownerDocument;
 					var ownerNode = doc.contains ? doc : doc.documentElement;
 					if (!ownerNode || ownerNode.contains(element) === false) {
-						destroyCB();
+						// if the teardown is happening while the dom queue is flushing,
+						// there may have been a rebinding of _action handlers queued
+						// in the mutate queue already, so do the teardown later.
+						if(queues.domQueue.isFlushing) {
+							queues.mutateQueue.enqueue(destroyCB);
+						} else {
+							destroyCB();
+						}
 					}
 				});
 				bindings.user.push(function () {
