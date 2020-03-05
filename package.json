@@ -15,7 +15,7 @@
     "can-construct": "^3.2.0",
     "can-dom-events": "^1.1.0",
     "can-dom-mutate": "^2.0.0",
-    "can-event-queue": "<2.0.0",
+    "can-event-queue": "1.1.7",
     "can-key": "<2.0.0",
     "can-log": "^1.0.0",
     "can-namespace": "1.0.0",
